@@ -1,0 +1,197 @@
+
+/* Blendora Admin - Shared Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #faf5f7;
+    color: #333;
+}
+
+/* Sidebar */
+
+.sidebar {
+    width: 230px;
+    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 25px 15px;
+    background: #82415e;
+    color: white;
+}
+
+.sidebar h2 {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 13px;
+    margin: 7px 0;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: #a85d7c;
+}
+
+/* Main Content */
+
+.main-content {
+    margin-left: 230px;
+    padding: 30px;
+}
+
+h1, h2 {
+    color: #82415e;
+    margin-bottom: 15px;
+}
+
+/* Cards */
+
+.card {
+    background: white;
+    padding: 22px;
+    border-radius: 13px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+}
+
+/* Forms */
+
+label {
+    display: block;
+    margin: 15px 0 7px;
+    font-weight: bold;
+    color: #704052;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* Primary Button */
+
+.primary-button {
+    padding: 12px 22px;
+    background: #a85d7c;
+    color: white;
+    border: none;
+    border-radius: 22px;
+    transition: 0.3s;
+}
+
+.primary-button:hover {
+    background: #82415e;
+}
+
+/* Tables */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 13px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background: #f8e6ed;
+    color: #82415e;
+}
+
+/* Summary Grid */
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+}
+
+/* Messages */
+
+.success-message {
+    color: #34734a;
+    margin-top: 12px;
+}
+
+.error-message {
+    color: #b42318;
+    margin-top: 12px;
+}
+
+.empty-message {
+    text-align: center;
+    color: #777;
+    padding: 20px;
+}
+
+/* Responsive Design */
+
+@media (max-width: 750px) {
+
+    .sidebar {
+        width: 100%;
+        min-height: auto;
+        position: relative;
+    }
+
+    .sidebar a {
+        display: inline-block;
+        padding: 10px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 18px;
+    }
+}
+
+@media print {
+
+    .sidebar,
+    .no-print {
+        display: none;
+    }
+
+    .main-content {
+        margin: 0;
+        padding: 10px;
+    }
+
+    body {
+        background: white;
+    }
+}

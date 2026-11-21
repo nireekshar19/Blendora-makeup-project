@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users | Blendora Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #faf5f7;
+        }
+
+        .sidebar {
+            width: 230px;
+            min-height: 100vh;
+            background: #82415e;
+            color: white;
+            position: fixed;
+            padding: 25px 15px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 13px;
+            margin: 7px 0;
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #a85d7c;
+        }
+
+        .main-content {
+            margin-left: 230px;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #82415e;
+        }
+
+        .description {
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        .users-card {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8e6ed;
+            color: #82415e;
+        }
+
+        td {
+            color: #555;
+        }
+
+        .delete-button {
+            background: #f8e0e0;
+            color: #a33;
+            border: none;
+            padding: 8px 13px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #82415e;
+            text-decoration: none;
+        }
+
+        @media(max-width: 750px) {
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: relative;
+            }
+
+            .sidebar a {
+                display: inline-block;
+                padding: 10px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <h2>Blendora Admin</h2>
+
+        <a href="dashboard.html">Dashboard</a>
+        <a href="users.html" class="active">Manage Users</a>
+        <a href="manage-products.html">Manage Products</a>
+        <a href="manage-orders.html">Manage Orders</a>
+        <a href="manage-blends.html">Blend Requests</a>
+        <a href="reports.html">Reports</a>
+
+    </aside>
+
+    <main class="main-content">
+
+        <h1>Manage Users</h1>
+
+        <p class="description">
+            View and manage registered customer information.
+        </p>
+
+        <section class="users-card">
+
+            <h2>Customer List</h2>
+
+            <input
+                type="text"
+                id="searchInput"
+                class="search-box"
+                placeholder="Search by name, email or phone..."
+            >
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Sl. No.</th>
+                            <th>Customer Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="usersTable"></tbody>
+
+                </table>
+
+            </div>
+
+            <p id="emptyMessage" class="empty-message"></p>
+
+        </section>
+
+        <a href="dashboard.html" class="back-link">
+            ← Back to Dashboard
+        </a>
+
+    </main>
+
+    <script>
+        // Admin access check
+        if (sessionStorage.getItem("blendoraAdminLoggedIn") !== "true") {
+            window.location.replace("admin-login.html");
+        }
+
+        const usersTable = document.getElementById("usersTable");
+        const searchInput = document.getElementById("searchInput");
+        const emptyMessage = document.getElementById("emptyMessage");
+
+        function getUsers() {
+            return JSON.parse(
+                localStorage.getItem("blendoraProfiles") || "[]"
+            );
+        }
+
+        function displayUsers(searchText = "") {
+
+            const users = getUsers();
+
+            usersTable.innerHTML = "";
+
+            const filteredUsers = users.filter(user => {
+
+                const searchableText = [
+                    user.name,
+                    user.email,
+                    user.phone
+                ].join(" ").toLowerCase();
+
+                return searchableText.includes(searchText.toLowerCase());
+            });
+
+            if (filteredUsers.length === 0) {
+                emptyMessage.textContent = users.length === 0
+                    ? "No registered customer records found."
+                    : "No matching customers found.";
+
+                return;
+            }
+
+            emptyMessage.textContent = "";
+
+            filteredUsers.forEach((user, index) => {
+
+                const row = document.createElement("tr");
+
+                const values = [
+                    index + 1,
+                    user.name || "-",
+                    user.email || "-",
+                    user.phone || ""
+                ];
+
+                values.forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                const actionCell = document.createElement("td");
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.className = "delete-button";
+
+                deleteButton.addEventListener("click", function() {
+
+                    const confirmDelete = confirm(
+                        "Are you sure you want to delete this customer record?"
+                    );
+
+                    if (!confirmDelete) return;
+
+                    const updatedUsers = getUsers();
+
+                    const userIndex = updatedUsers.findIndex(
+                        item => item.email === user.email
+                    );
+
+                    if (userIndex !== -1) {
+                        updatedUsers.splice(userIndex, 1);
+
+                        localStorage.setItem(
+                            "blendoraProfiles",
+                            JSON.stringify(updatedUsers)
+                        );
+                    }
+
+                    displayUsers(searchInput.value);
+                });
+
+                actionCell.appendChild(deleteButton);
+                row.appendChild(actionCell);
+
+                usersTable.appendChild(row);
+            });
+        }
+
+        searchInput.addEventListener("input", function() {
+            displayUsers(this.value);
+        });
+
+        displayUsers();
+    </script>
+
+</body>
+</html>

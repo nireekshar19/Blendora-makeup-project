@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Blendora</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #faf5f7;
+        }
+
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background: #82415e;
+            color: white;
+            position: fixed;
+            padding: 25px 15px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 14px;
+            margin: 8px 0;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #a85d7c;
+        }
+
+        .main-content {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .topbar h1 {
+            color: #82415e;
+        }
+
+        .logout-button {
+            background: #a85d7c;
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .welcome {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 25px 0;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+        }
+
+        .welcome h2 {
+            color: #82415e;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+        }
+
+        .stat-card h3 {
+            color: #777;
+            font-size: 15px;
+        }
+
+        .stat-card p {
+            color: #82415e;
+            font-size: 30px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            margin-top: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+        }
+
+        .section h2 {
+            color: #82415e;
+        }
+
+        .quick-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .quick-links a {
+            background: #f8e6ed;
+            color: #82415e;
+            padding: 13px 18px;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .quick-links a:hover {
+            background: #f0cedc;
+        }
+
+        .note {
+            color: #777;
+            line-height: 1.6;
+        }
+
+        @media(max-width: 750px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .sidebar h2 {
+                margin-bottom: 15px;
+            }
+
+            .sidebar a {
+                display: inline-block;
+                padding: 10px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <h2>Blendora Admin</h2>
+
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="users.html">Manage Users</a>
+        <a href="manage-products.html">Manage Products</a>
+        <a href="manage-orders.html">Manage Orders</a>
+        <a href="manage-blends.html">Blend Requests</a>
+        <a href="reports.html">Reports</a>
+
+    </aside>
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <h1>Admin Dashboard</h1>
+
+            <button class="logout-button" id="logoutButton">
+                Logout
+            </button>
+
+        </div>
+
+        <section class="welcome">
+
+            <h2>Welcome, Admin!</h2>
+
+            <p>
+                Manage your Blendora store, customers, products,
+                custom blend requests and orders from one place.
+            </p>
+
+        </section>
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <p id="totalUsers">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Total Products</h3>
+                <p id="totalProducts">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Total Orders</h3>
+                <p id="totalOrders">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Blend Requests</h3>
+                <p id="totalBlends">0</p>
+            </div>
+
+        </section>
+
+        <section class="section">
+
+            <h2>Quick Actions</h2>
+
+            <div class="quick-links">
+
+                <a href="users.html">View Users</a>
+
+                <a href="manage-products.html">Manage Products</a>
+
+                <a href="manage-orders.html">View Orders</a>
+
+                <a href="manage-blends.html">View Blend Requests</a>
+
+                <a href="reports.html">View Reports</a>
+
+            </div>
+
+        </section>
+
+        <section class="section">
+
+            <h2>System Overview</h2>
+
+            <p class="note">
+                This dashboard currently displays demo data stored
+                in the browser's local storage. Firebase integration
+                will be added later for real-time customer, product,
+                order and blend request management.
+            </p>
+
+        </section>
+
+    </main>
+
+    <script>
+        // Protect the demo admin dashboard.
+        if (sessionStorage.getItem("blendoraAdminLoggedIn") !== "true") {
+            window.location.replace("admin-login.html");
+        }
+
+        function updateDashboard() {
+
+            const profiles = JSON.parse(
+                localStorage.getItem("blendoraProfiles") || "[]"
+            );
+
+            const orders = JSON.parse(
+                localStorage.getItem("blendoraOrders") || "[]"
+            );
+
+            const blends = JSON.parse(
+                localStorage.getItem("blendoraRequests") || "[]"
+            );
+
+            const products = JSON.parse(
+                localStorage.getItem("blendoraProducts") || "[]"
+            );
+
+            document.getElementById("totalUsers").textContent =
+                profiles.length;
+
+            document.getElementById("totalProducts").textContent =
+                products.length;
+
+            document.getElementById("totalOrders").textContent =
+                orders.length;
+
+            document.getElementById("totalBlends").textContent =
+                blends.length;
+        }
+
+        document.getElementById("logoutButton").addEventListener(
+            "click", function() {
+
+                sessionStorage.removeItem("blendoraAdminLoggedIn");
+
+                window.location.href = "admin-login.html";
+            }
+        );
+
+        updateDashboard();
+    </script>
+
+</body>
+</html>

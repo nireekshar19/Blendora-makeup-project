@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | Blendora</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .details-container {
+            max-width: 1100px;
+            margin: 45px auto;
+            padding: 20px;
+        }
+
+        .details-heading {
+            text-align: center;
+            color: #8b4564;
+            margin-bottom: 35px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 35px;
+        }
+
+        .detail-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding-bottom: 25px;
+        }
+
+        .detail-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .detail-content {
+            padding: 20px;
+        }
+
+        .detail-content h2 {
+            color: #8b4564;
+        }
+
+        .detail-content p {
+            color: #666;
+            line-height: 1.7;
+        }
+
+        .detail-content ul {
+            color: #666;
+            line-height: 2;
+            padding-left: 20px;
+        }
+
+        .customize-button {
+            display: inline-block;
+            background: #a85d7c;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-top: 12px;
+        }
+
+        .customize-button:hover {
+            background: #82415e;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #8b4564;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="quiz.html">Shade Quiz</a>
+            <a href="products.html">Products</a>
+            <a href="login.html">Login</a>
+        </nav>
+    </header>
+
+    <main class="details-container">
+
+        <div class="details-heading">
+            <h1>Discover Your Perfect Blend</h1>
+            <p>Explore our custom-blended makeup collection.</p>
+        </div>
+
+        <div class="details-grid">
+
+            <!-- Foundation Details -->
+            <section class="detail-card">
+
+                <img src="images/foundation.jpg"
+                     alt="Custom-blended foundation">
+
+                <div class="detail-content">
+                    <h2>Custom-Blended Foundation</h2>
+
+                    <p>
+                        A personalised foundation concept designed
+                        around your skin tone, undertone and preferred
+                        coverage.
+                    </p>
+
+                    <h3>Features</h3>
+
+                    <ul>
+                        <li>Personalised shade selection</li>
+                        <li>Multiple coverage preferences</li>
+                        <li>Skin profile-based recommendations</li>
+                        <li>Custom blend request option</li>
+                    </ul>
+
+                    <a href="quiz.html" class="customize-button">
+                        Customize Foundation
+                    </a>
+                </div>
+
+            </section>
+
+            <!-- Concealer Details -->
+            <section class="detail-card">
+
+                <img src="images/concealer.jpg"
+                     alt="Custom-blended concealer">
+
+                <div class="detail-content">
+                    <h2>Custom-Blended Concealer</h2>
+
+                    <p>
+                        A personalised concealer concept based on
+                        your skin profile and desired coverage.
+                    </p>
+
+                    <h3>Features</h3>
+
+                    <ul>
+                        <li>Personalised shade selection</li>
+                        <li>Coverage preference selection</li>
+                        <li>Skin tone-based recommendations</li>
+                        <li>Custom blend request option</li>
+                    </ul>
+
+                    <a href="quiz.html" class="customize-button">
+                        Customize Concealer
+                    </a>
+                </div>
+
+            </section>
+
+        </div>
+
+        <a href="products.html" class="back-link">
+            ← Back to Products
+        </a>
+
+    </main>
+
+</body>
+</html>

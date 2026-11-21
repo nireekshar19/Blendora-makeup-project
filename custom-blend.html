@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Blend | Blendora</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .blend-container {
+            max-width: 750px;
+            margin: 40px auto;
+            padding: 30px 20px;
+        }
+
+        .blend-heading {
+            text-align: center;
+            color: #8b4564;
+            margin-bottom: 30px;
+        }
+
+        .blend-form {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .blend-form label {
+            display: block;
+            margin: 18px 0 8px;
+            color: #704052;
+            font-weight: bold;
+        }
+
+        .blend-form input,
+        .blend-form select,
+        .blend-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        .blend-form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .blend-form button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 25px;
+            background: #a85d7c;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .blend-form button:hover {
+            background: #82415e;
+        }
+
+        .message {
+            margin-top: 15px;
+            text-align: center;
+            color: #34734a;
+            font-weight: bold;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #8b4564;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="quiz.html">Shade Quiz</a>
+        <a href="products.html">Products</a>
+        <a href="login.html">Login</a>
+    </nav>
+</header>
+
+<main class="blend-container">
+
+    <div class="blend-heading">
+        <h1>Create Your Custom Blend</h1>
+        <p>Tell us what kind of makeup blend you are looking for.</p>
+    </div>
+
+    <form class="blend-form" id="blendForm">
+
+        <label for="product">Select Product</label>
+        <select id="product" required>
+            <option value="">Choose a product</option>
+            <option value="Foundation">Foundation</option>
+            <option value="Concealer">Concealer</option>
+            <option value="Foundation and Concealer">Foundation and Concealer</option>
+        </select>
+
+        <label for="skinTone">Skin Tone</label>
+        <select id="skinTone" required>
+            <option value="">Select your skin tone</option>
+            <option>Fair</option>
+            <option>Light</option>
+            <option>Medium</option>
+            <option>Tan</option>
+            <option>Deep</option>
+        </select>
+
+        <label for="undertone">Undertone</label>
+        <select id="undertone" required>
+            <option value="">Select your undertone</option>
+            <option>Warm</option>
+            <option>Cool</option>
+            <option>Neutral</option>
+            <option>Not sure</option>
+        </select>
+
+        <label for="skinType">Skin Type</label>
+        <select id="skinType" required>
+            <option value="">Select your skin type</option>
+            <option>Oily</option>
+            <option>Dry</option>
+            <option>Combination</option>
+            <option>Normal</option>
+        </select>
+
+        <label for="coverage">Preferred Coverage</label>
+        <select id="coverage" required>
+            <option value="">Choose coverage</option>
+            <option>Light</option>
+            <option>Medium</option>
+            <option>Full</option>
+        </select>
+
+        <label for="notes">Additional Requirements</label>
+        <textarea id="notes"
+            placeholder="Mention any specific requirements..."></textarea>
+
+        <button type="submit">Submit Custom Blend Request</button>
+
+        <p class="message" id="message"></p>
+
+    </form>
+
+    <a href="products.html" class="back-link">
+        ← Back to Products
+    </a>
+
+</main>
+
+<script>
+    document.getElementById("blendForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const request = {
+            product: document.getElementById("product").value,
+            skinTone: document.getElementById("skinTone").value,
+            undertone: document.getElementById("undertone").value,
+            skinType: document.getElementById("skinType").value,
+            coverage: document.getElementById("coverage").value,
+            notes: document.getElementById("notes").value,
+            submittedAt: new Date().toISOString()
+        };
+
+        let requests = JSON.parse(
+            localStorage.getItem("blendoraRequests") || "[]"
+        );
+
+        requests.push(request);
+
+        localStorage.setItem(
+            "blendoraRequests",
+            JSON.stringify(requests)
+        );
+
+        document.getElementById("message").textContent =
+            "Your request has been saved successfully in this browser!";
+
+        document.getElementById("blendForm").reset();
+    });
+</script>
+
+</body>
+</html>

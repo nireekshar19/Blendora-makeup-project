@@ -1,0 +1,322 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports | Blendora Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #faf5f7;
+        }
+
+        .sidebar {
+            width: 230px;
+            min-height: 100vh;
+            background: #82415e;
+            color: white;
+            position: fixed;
+            padding: 25px 15px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 13px;
+            margin: 7px 0;
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #a85d7c;
+        }
+
+        .main-content {
+            margin-left: 230px;
+            padding: 30px;
+        }
+
+        h1, h2 {
+            color: #82415e;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-top: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 22px;
+            border-radius: 13px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .summary-card p {
+            color: #777;
+            margin-bottom: 8px;
+        }
+
+        .summary-card h2 {
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .report-section {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-top: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 13px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8e6ed;
+            color: #82415e;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .print-button {
+            padding: 12px 22px;
+            background: #a85d7c;
+            color: white;
+            border: none;
+            border-radius: 22px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #82415e;
+            text-decoration: none;
+        }
+
+        @media(max-width: 750px) {
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: relative;
+            }
+
+            .sidebar a {
+                display: inline-block;
+                padding: 10px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 18px;
+            }
+        }
+
+        @media print {
+            .sidebar, .print-button, .back-link {
+                display: none;
+            }
+
+            .main-content {
+                margin: 0;
+                padding: 10px;
+            }
+
+            body {
+                background: white;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <h2>Blendora Admin</h2>
+
+        <a href="dashboard.html">Dashboard</a>
+        <a href="users.html">Manage Users</a>
+        <a href="manage-products.html">Manage Products</a>
+        <a href="manage-orders.html">Manage Orders</a>
+        <a href="manage-blends.html">Blend Requests</a>
+        <a href="reports.html" class="active">Reports</a>
+    </aside>
+
+    <main class="main-content">
+
+        <h1>Reports & Analytics</h1>
+        <p>Overview of store activity and customer transactions.</p>
+
+        <section class="summary-grid">
+
+            <div class="summary-card">
+                <p>Total Products</p>
+                <h2 id="totalProducts">0</h2>
+            </div>
+
+            <div class="summary-card">
+                <p>Total Customers</p>
+                <h2 id="totalCustomers">0</h2>
+            </div>
+
+            <div class="summary-card">
+                <p>Total Orders</p>
+                <h2 id="totalOrders">0</h2>
+            </div>
+
+            <div class="summary-card">
+                <p>Total Blend Requests</p>
+                <h2 id="totalRequests">0</h2>
+            </div>
+
+            <div class="summary-card">
+                <p>Total Order Value</p>
+                <h2 id="totalRevenue">₹0.00</h2>
+            </div>
+
+        </section>
+
+        <section class="report-section">
+
+            <h2>Order Summary</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="orderReport"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <button class="print-button" onclick="window.print()">
+            Print Report
+        </button>
+
+        <br>
+
+        <a href="dashboard.html" class="back-link">
+            ← Back to Dashboard
+        </a>
+
+    </main>
+
+    <script>
+        if (sessionStorage.getItem("blendoraAdminLoggedIn") !== "true") {
+            window.location.replace("admin-login.html");
+        }
+
+        function readData(key) {
+            try {
+                return JSON.parse(localStorage.getItem(key) || "[]");
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function loadReports() {
+
+            const products = readData("blendoraProducts");
+            const customers = readData("blendoraProfiles");
+            const orders = readData("blendoraOrders");
+            const requests = readData("blendoraRequests");
+
+            document.getElementById("totalProducts").textContent =
+                products.length;
+
+            document.getElementById("totalCustomers").textContent =
+                customers.length;
+
+            document.getElementById("totalOrders").textContent =
+                orders.length;
+
+            document.getElementById("totalRequests").textContent =
+                requests.length;
+
+            const revenue = orders.reduce(function(total, order) {
+                return total + Number(order.total || order.totalAmount || 0);
+            }, 0);
+
+            document.getElementById("totalRevenue").textContent =
+                "₹" + revenue.toFixed(2);
+
+            const orderReport = document.getElementById("orderReport");
+
+            orderReport.innerHTML = "";
+
+            if (orders.length === 0) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+
+                cell.colSpan = 4;
+                cell.textContent = "No orders available yet.";
+                cell.style.textAlign = "center";
+
+                row.appendChild(cell);
+                orderReport.appendChild(row);
+                return;
+            }
+
+            orders.forEach(function(order, index) {
+
+                const row = document.createElement("tr");
+
+                const values = [
+                    order.id || ("ORD" + (index + 1)),
+                    order.name || order.fullName || "Not provided",
+                    "₹" + Number(order.total || order.totalAmount || 0).toFixed(2),
+                    order.status || "Pending"
+                ];
+
+                values.forEach(function(value) {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                orderReport.appendChild(row);
+            });
+        }
+
+        loadReports();
+    </script>
+
+</body>
+</html>

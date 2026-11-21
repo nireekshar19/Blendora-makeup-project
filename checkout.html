@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Blendora</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .checkout-container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .checkout-heading {
+            text-align: center;
+            color: #8b4564;
+            margin-bottom: 30px;
+        }
+
+        .checkout-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .checkout-box h2 {
+            color: #8b4564;
+            margin-top: 25px;
+        }
+
+        .checkout-box label {
+            display: block;
+            margin: 15px 0 7px;
+            color: #704052;
+            font-weight: bold;
+        }
+
+        .checkout-box input,
+        .checkout-box textarea,
+        .checkout-box select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        .checkout-box textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .order-summary {
+            background: #fff5f8;
+            padding: 18px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 25px;
+            background: #a85d7c;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .submit-button:hover {
+            background: #82415e;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #8b4564;
+            text-decoration: none;
+        }
+
+        .message {
+            text-align: center;
+            color: #34734a;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">My Cart</a>
+        <a href="login.html">Login</a>
+    </nav>
+</header>
+
+<main class="checkout-container">
+
+    <div class="checkout-heading">
+        <h1>Checkout</h1>
+        <p>Enter your details to place your order.</p>
+    </div>
+
+    <form class="checkout-box" id="checkoutForm">
+
+        <h2>Customer Information</h2>
+
+        <label for="customerName">Full Name</label>
+        <input type="text" id="customerName"
+               placeholder="Enter your full name" required>
+
+        <label for="email">Email Address</label>
+        <input type="email" id="email"
+               placeholder="Enter your email" required>
+
+        <label for="phone">Mobile Number</label>
+        <input type="tel" id="phone"
+               placeholder="Enter 10-digit mobile number"
+               pattern="[0-9]{10}" maxlength="10" required>
+
+        <h2>Delivery Address</h2>
+
+        <label for="address">Full Address</label>
+        <textarea id="address"
+                  placeholder="House number, street, area"
+                  required></textarea>
+
+        <label for="city">City</label>
+        <input type="text" id="city"
+               placeholder="Enter your city" required>
+
+        <label for="state">State</label>
+        <input type="text" id="state"
+               placeholder="Enter your state" required>
+
+        <label for="pincode">PIN Code</label>
+        <input type="text" id="pincode"
+               placeholder="Enter 6-digit PIN code"
+               pattern="[0-9]{6}" maxlength="6" required>
+
+        <h2>Payment Preference</h2>
+
+        <label for="payment">Select Payment Method</label>
+        <select id="payment" required>
+            <option value="">Choose payment method</option>
+            <option value="Cash on Delivery">Cash on Delivery</option>
+            <option value="Online Payment - To be enabled">
+                Online Payment (Coming Soon)
+            </option>
+        </select>
+
+        <div class="order-summary">
+            <h2>Order Summary</h2>
+            <div id="summaryItems"></div>
+            <h3 id="summaryTotal">Total: Price to be confirmed</h3>
+        </div>
+
+        <button type="submit" class="submit-button">
+            Place Order
+        </button>
+
+        <p class="message" id="message"></p>
+
+    </form>
+
+    <a href="cart.html" class="back-link">
+        ← Back to Cart
+    </a>
+
+</main>
+
+<script>
+    const cart = JSON.parse(
+        localStorage.getItem("blendoraCart") || "[]"
+    );
+
+    const summaryItems = document.getElementById("summaryItems");
+    const summaryTotal = document.getElementById("summaryTotal");
+
+    if (cart.length === 0) {
+        summaryItems.textContent = "Your cart is empty.";
+        document.querySelector(".submit-button").disabled = true;
+        document.querySelector(".submit-button").textContent =
+            "Add Products Before Checkout";
+    } else {
+        cart.forEach(item => {
+            const line = document.createElement("p");
+            line.textContent = item.name || "Makeup Product";
+            summaryItems.appendChild(line);
+        });
+
+        const hasPrices = cart.every(
+            item => Number.isFinite(Number(item.price)) &&
+                    item.price !== ""
+        );
+
+        if (hasPrices) {
+            const total = cart.reduce(
+                (sum, item) => sum + Number(item.price), 0
+            );
+
+            summaryTotal.textContent = "Total: ₹" + total.toFixed(2);
+        }
+    }
+
+    document.getElementById("checkoutForm").addEventListener(
+        "submit", function(event) {
+
+            event.preventDefault();
+
+            if (cart.length === 0) {
+                return;
+            }
+
+            const order = {
+                orderId: "BL" + Date.now(),
+                customerName: document.getElementById("customerName").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                address: document.getElementById("address").value,
+                city: document.getElementById("city").value,
+                state: document.getElementById("state").value,
+                pincode: document.getElementById("pincode").value,
+                payment: document.getElementById("payment").value,
+                products: cart,
+                orderDate: new Date().toISOString(),
+                status: "Pending"
+            };
+
+            if (order.payment === "Online Payment - To be enabled") {
+                document.getElementById("message").textContent =
+                    "Online payment is not available yet. Please select Cash on Delivery.";
+                return;
+            }
+
+            const orders = JSON.parse(
+                localStorage.getItem("blendoraOrders") || "[]"
+            );
+
+            orders.push(order);
+
+            localStorage.setItem(
+                "blendoraOrders",
+                JSON.stringify(orders)
+            );
+
+            localStorage.removeItem("blendoraCart");
+
+            localStorage.setItem(
+                "blendoraLastOrder",
+                JSON.stringify(order)
+            );
+
+            window.location.href = "order.html";
+        }
+    );
+</script>
+
+</body>
+</html>

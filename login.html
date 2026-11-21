@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Blendora</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        body {
+            background: #f8e9ed;
+            min-height: 100vh;
+        }
+
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 35px rgba(80, 40, 50, 0.10);
+        }
+
+        .auth-logo {
+            text-align: center;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 34px;
+            color: #82415e;
+            margin-bottom: 25px;
+        }
+
+        .auth-card h1 {
+            text-align: center;
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 30px;
+            color: #61364a;
+            margin-bottom: 10px;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: #88766e;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .auth-card label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 16px 0 8px;
+            color: #704052;
+        }
+
+        .auth-card input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #e3d4cc;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        .auth-card input:focus {
+            outline: 2px solid #d9a7ba;
+            border-color: #82415e;
+        }
+
+        .auth-button {
+            width: 100%;
+            padding: 15px;
+            background: #82415e;
+            border: none;
+            color: white;
+            border-radius: 25px;
+            font-size: 16px;
+            margin-top: 25px;
+            cursor: pointer;
+        }
+
+        .auth-button:hover {
+            background: #a85d7c;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 22px;
+            color: #806e76;
+            font-size: 14px;
+        }
+
+        .auth-switch a,
+        .back-home {
+            color: #a85d7c;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .back-home {
+            display: block;
+            text-align: center;
+            margin-top: 22px;
+        }
+
+        .auth-message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #82415e;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media(max-width: 480px) {
+            .auth-card {
+                padding: 28px 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="auth-container">
+    <div class="auth-card">
+
+        <div class="auth-logo">Blendora.</div>
+
+        <h1 id="formTitle">Welcome Back!</h1>
+
+        <p class="auth-subtitle" id="formSubtitle">
+            Login to discover your perfect shade.
+        </p>
+
+        <form id="authForm">
+
+            <div id="nameGroup" class="hidden">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName"
+                       placeholder="Enter your full name">
+            </div>
+
+            <label for="email">Email Address</label>
+            <input type="email" id="email"
+                   placeholder="Enter your email" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password"
+                   placeholder="Enter your password"
+                   minlength="6" required>
+
+            <button type="submit" class="auth-button" id="submitButton">
+                Login
+            </button>
+
+        </form>
+
+        <p class="auth-message" id="message" role="status"></p>
+
+        <div class="auth-switch">
+            <span id="switchText">Don't have an account?</span>
+            <a href="#" id="switchLink">Sign Up</a>
+        </div>
+
+        <a href="index.html" class="back-home">
+            ← Back to Home
+        </a>
+
+    </div>
+</div>
+
+<script>
+    const authForm = document.getElementById("authForm");
+    const formTitle = document.getElementById("formTitle");
+    const formSubtitle = document.getElementById("formSubtitle");
+    const nameGroup = document.getElementById("nameGroup");
+    const fullName = document.getElementById("fullName");
+    const submitButton = document.getElementById("submitButton");
+    const switchText = document.getElementById("switchText");
+    const switchLink = document.getElementById("switchLink");
+    const message = document.getElementById("message");
+
+    let isSignup = false;
+
+    switchLink.addEventListener("click", function(event) {
+        event.preventDefault();
+
+        isSignup = !isSignup;
+        message.textContent = "";
+
+        if (isSignup) {
+            formTitle.textContent = "Create Account";
+            formSubtitle.textContent =
+                "Join Blendora and discover your perfect shade.";
+
+            nameGroup.classList.remove("hidden");
+            fullName.required = true;
+
+            submitButton.textContent = "Create Account";
+            switchText.textContent = "Already have an account?";
+            switchLink.textContent = "Login";
+        } else {
+            formTitle.textContent = "Welcome Back!";
+            formSubtitle.textContent =
+                "Login to discover your perfect shade.";
+
+            nameGroup.classList.add("hidden");
+            fullName.required = false;
+
+            submitButton.textContent = "Login";
+            switchText.textContent = "Don't have an account?";
+            switchLink.textContent = "Sign Up";
+        }
+    });
+
+    authForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        message.textContent =
+            "Authentication is not connected yet. Firebase setup is required.";
+    });
+</script>
+
+</body>
+</html>

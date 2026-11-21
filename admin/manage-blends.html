@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Blend Requests | Blendora Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #faf5f7;
+        }
+
+        .sidebar {
+            width: 230px;
+            min-height: 100vh;
+            background: #82415e;
+            color: white;
+            position: fixed;
+            padding: 25px 15px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 13px;
+            margin: 7px 0;
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #a85d7c;
+        }
+
+        .main-content {
+            margin-left: 230px;
+            padding: 30px;
+        }
+
+        h1, h2 {
+            color: #82415e;
+        }
+
+        .requests-section {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-top: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 850px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 13px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8e6ed;
+            color: #82415e;
+        }
+
+        select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #82415e;
+            text-decoration: none;
+        }
+
+        @media(max-width: 750px) {
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: relative;
+            }
+
+            .sidebar a {
+                display: inline-block;
+                padding: 10px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <h2>Blendora Admin</h2>
+
+        <a href="dashboard.html">Dashboard</a>
+        <a href="users.html">Manage Users</a>
+        <a href="manage-products.html">Manage Products</a>
+        <a href="manage-orders.html">Manage Orders</a>
+        <a href="manage-blends.html" class="active">Blend Requests</a>
+        <a href="reports.html">Reports</a>
+    </aside>
+
+    <main class="main-content">
+
+        <h1>Custom Blend Requests</h1>
+        <p>Review customer requests for personalized foundation and concealer blends.</p>
+
+        <section class="requests-section">
+
+            <h2>Customer Requests</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Customer Name</th>
+                            <th>Skin Tone</th>
+                            <th>Product</th>
+                            <th>Requirements</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="requestsTable"></tbody>
+                </table>
+            </div>
+
+            <p class="empty-message" id="emptyMessage"></p>
+
+        </section>
+
+        <a href="dashboard.html" class="back-link">
+            ← Back to Dashboard
+        </a>
+
+    </main>
+
+    <script>
+        if (sessionStorage.getItem("blendoraAdminLoggedIn") !== "true") {
+            window.location.replace("admin-login.html");
+        }
+
+        const requestsTable = document.getElementById("requestsTable");
+        const emptyMessage = document.getElementById("emptyMessage");
+
+        function getRequests() {
+            return JSON.parse(
+                localStorage.getItem("blendoraRequests") || "[]"
+            );
+        }
+
+        function displayRequests() {
+
+            const requests = getRequests();
+
+            requestsTable.innerHTML = "";
+
+            if (requests.length === 0) {
+                emptyMessage.textContent = "No custom blend requests received yet.";
+                return;
+            }
+
+            emptyMessage.textContent = "";
+
+            requests.forEach(function(request, index) {
+
+                const row = document.createElement("tr");
+
+                const values = [
+                    request.id || ("REQ" + (index + 1)),
+                    request.name || request.fullName || "Not provided",
+                    request.skinTone || request.tone || "Not specified",
+                    request.product || request.productType || "Not specified",
+                    request.requirements || request.description || "No details"
+                ];
+
+                values.forEach(function(value) {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                const statusCell = document.createElement("td");
+                const statusSelect = document.createElement("select");
+
+                const statuses = [
+                    "Pending",
+                    "Reviewed",
+                    "In Progress",
+                    "Completed",
+                    "Rejected"
+                ];
+
+                statuses.forEach(function(status) {
+                    const option = document.createElement("option");
+                    option.value = status;
+                    option.textContent = status;
+                    statusSelect.appendChild(option);
+                });
+
+                statusSelect.value = request.status || "Pending";
+
+                statusSelect.addEventListener("change", function() {
+
+                    const updatedRequests = getRequests();
+
+                    updatedRequests[index].status = statusSelect.value;
+
+                    localStorage.setItem(
+                        "blendoraRequests",
+                        JSON.stringify(updatedRequests)
+                    );
+                });
+
+                statusCell.appendChild(statusSelect);
+                row.appendChild(statusCell);
+
+                requestsTable.appendChild(row);
+            });
+        }
+
+        displayRequests();
+    </script>
+
+</body>
+</html>

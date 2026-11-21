@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Blendora</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        body {
+            margin: 0;
+            background: #fff5f8;
+            font-family: Arial, sans-serif;
+            color: #593344;
+        }
+
+        .welcome {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .welcome-content {
+            max-width: 650px;
+        }
+
+        .welcome h1 {
+            font-size: clamp(36px, 7vw, 58px);
+            color: #8b4564;
+        }
+
+        .welcome p {
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 30px;
+        }
+
+        .actions a {
+            padding: 14px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            background: #a85d7c;
+            color: white;
+        }
+
+        .actions a.secondary {
+            background: white;
+            color: #8b4564;
+            border: 1px solid #a85d7c;
+        }
+
+        .features {
+            max-width: 850px;
+            margin: auto;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .features h2 {
+            color: #8b4564;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-top: 25px;
+        }
+
+        .feature {
+            background: white;
+            padding: 22px;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<section class="welcome">
+    <div class="welcome-content">
+        <h1>Welcome to Blendora</h1>
+        <p>
+            Your beauty, your shade, your blend.
+            Discover foundation and concealer made to match
+            your unique skin tone.
+        </p>
+
+        <div class="actions">
+            <a href="quiz.html">Find My Shade</a>
+            <a href="products.html" class="secondary">Explore Products</a>
+            <a href="login.html" class="secondary">Get Started</a>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <h2>Your Blendora Journey</h2>
+
+    <div class="feature-grid">
+        <div class="feature">
+            <h3>01. Discover</h3>
+            <p>Explore makeup products and shades.</p>
+        </div>
+
+        <div class="feature">
+            <h3>02. Match</h3>
+            <p>Take our shade-matching quiz.</p>
+        </div>
+
+        <div class="feature">
+            <h3>03. Customize</h3>
+            <p>Explore your custom blend options.</p>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

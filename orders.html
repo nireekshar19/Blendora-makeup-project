@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | Blendora</title>
+   <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .orders-container {
+            max-width: 950px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .orders-heading {
+            text-align: center;
+            color: #8b4564;
+            margin-bottom: 30px;
+        }
+
+        .order-card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .order-card h2 {
+            color: #8b4564;
+        }
+
+        .order-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        .status {
+            display: inline-block;
+            background: #fff0d9;
+            color: #94651b;
+            padding: 7px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .empty-orders {
+            text-align: center;
+            background: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            color: #777;
+        }
+
+        .shop-button {
+            display: inline-block;
+            background: #a85d7c;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-top: 15px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #8b4564;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="cart.html">My Cart</a>
+        <a href="profile.html">My Profile</a>
+        <a href="orders.html">My Orders</a>
+    </nav>
+</header>
+
+<main class="orders-container">
+
+    <div class="orders-heading">
+        <h1>My Orders</h1>
+        <p>View your previous orders and their status.</p>
+    </div>
+
+    <div id="ordersList"></div>
+
+    <a href="index.html" class="back-link">
+        ← Back to Home
+    </a>
+
+</main>
+
+<script>
+    function displayOrders() {
+
+        const orders = JSON.parse(
+            localStorage.getItem("blendoraOrders") || "[]"
+        );
+
+        const container = document.getElementById("ordersList");
+
+        container.innerHTML = "";
+
+        if (orders.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty-orders">
+                    <h2>No Orders Yet!</h2>
+                    <p>You haven't placed any orders.</p>
+                    <a href="products.html" class="shop-button">
+                        Explore Products
+                    </a>
+                </div>
+            `;
+
+            return;
+        }
+
+        orders.slice().reverse().forEach(function(order) {
+
+            const card = document.createElement("div");
+            card.className = "order-card";
+
+            const heading = document.createElement("h2");
+            heading.textContent = "Order #" + order.orderId;
+
+            const status = document.createElement("span");
+            status.className = "status";
+            status.textContent = order.status || "Pending";
+
+            const info = document.createElement("div");
+            info.className = "order-info";
+
+            const date = order.orderDate
+                ? new Date(order.orderDate).toLocaleDateString()
+                : "Not available";
+
+            const products = (order.products || [])
+                .map(product => product.name || "Makeup Product")
+                .join(", ");
+
+            const fields = [
+                ["Customer", order.customerName],
+                ["Order Date", date],
+                ["Products", products || "Not available"],
+                ["Payment", order.payment]
+            ];
+
+            fields.forEach(function(field) {
+
+                const item = document.createElement("p");
+                const strong = document.createElement("strong");
+
+                strong.textContent = field[0] + ": ";
+
+                item.appendChild(strong);
+                item.appendChild(
+                    document.createTextNode(field[1] || "-")
+                );
+
+                info.appendChild(item);
+            });
+
+            card.appendChild(heading);
+            card.appendChild(status);
+            card.appendChild(info);
+
+            container.appendChild(card);
+        });
+    }
+
+    displayOrders();
+</script>
+
+</body>
+</html>

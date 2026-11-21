@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart | Blendora</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .cart-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .cart-heading {
+            text-align: center;
+            color: #8b4564;
+            margin-bottom: 30px;
+        }
+
+        .cart-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 1px solid #eee;
+            padding: 18px 0;
+        }
+
+        .cart-item img {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .cart-info { flex: 1; }
+
+        .cart-info h3 {
+            color: #8b4564;
+            margin: 0 0 8px;
+        }
+
+        .cart-info p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .remove-button {
+            background: #f5e5eb;
+            color: #8b4564;
+            border: none;
+            padding: 9px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .cart-total {
+            text-align: right;
+            margin-top: 25px;
+            color: #8b4564;
+        }
+
+        .checkout-button {
+            display: inline-block;
+            background: #a85d7c;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-top: 12px;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #777;
+            padding: 35px 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #8b4564;
+            text-decoration: none;
+        }
+
+        @media(max-width: 550px) {
+            .cart-item {
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .cart-item img {
+                width: 85px;
+                height: 85px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="products.html">Products</a>
+        <a href="custom-blend.html">Custom Blend</a>
+        <a href="cart.html">My Cart</a>
+        <a href="login.html">Login</a>
+    </nav>
+</header>
+
+<main class="cart-container">
+
+    <div class="cart-heading">
+        <h1>My Shopping Cart</h1>
+        <p>Review your selected products.</p>
+    </div>
+
+    <section class="cart-box">
+        <div id="cartItems"></div>
+        <div class="cart-total" id="cartTotal"></div>
+    </section>
+
+    <a href="products.html" class="back-link">
+        ← Continue Shopping
+    </a>
+
+</main>
+
+<script>
+    function getCart() {
+        try {
+            const cart = JSON.parse(
+                localStorage.getItem("blendoraCart") || "[]"
+            );
+            return Array.isArray(cart) ? cart : [];
+        } catch {
+            return [];
+        }
+    }
+
+    function displayCart() {
+        const cartItems = getCart();
+        const container = document.getElementById("cartItems");
+        const totalContainer = document.getElementById("cartTotal");
+
+        container.innerHTML = "";
+        totalContainer.innerHTML = "";
+
+        if (cartItems.length === 0) {
+            container.innerHTML = `
+                <div class="empty-cart">
+                    <h2>Your cart is empty!</h2>
+                    <p>Explore our products and create your custom blend.</p>
+                    <a href="products.html" class="checkout-button">
+                        Explore Products
+                    </a>
+                </div>
+            `;
+            return;
+        }
+
+        let total = 0;
+        let allPricesValid = true;
+
+        cartItems.forEach((item, index) => {
+            const priceValue = Number(item.price);
+
+            if (item.price === "" || !Number.isFinite(priceValue) || priceValue < 0) {
+                allPricesValid = false;
+            } else {
+                total += priceValue;
+            }
+
+            const product = document.createElement("div");
+            product.className = "cart-item";
+
+            const image = document.createElement("img");
+            image.src = item.image || "images/foundation.jpg";
+            image.alt = item.name || "Makeup product";
+
+            const info = document.createElement("div");
+            info.className = "cart-info";
+
+            const heading = document.createElement("h3");
+            heading.textContent = item.name || "Makeup Product";
+
+            const price = document.createElement("p");
+            price.textContent = allPricesValid && item.price !== ""
+                ? "Price: ₹" + priceValue.toFixed(2)
+                : "Price: To be confirmed";
+
+            const remove = document.createElement("button");
+            remove.className = "remove-button";
+            remove.textContent = "Remove";
+            remove.addEventListener("click", () => removeItem(index));
+
+            info.appendChild(heading);
+            info.appendChild(price);
+            info.appendChild(remove);
+
+            product.appendChild(image);
+            product.appendChild(info);
+            container.appendChild(product);
+        });
+
+        totalContainer.innerHTML = allPricesValid
+            ? `<h2>Total: ₹${total.toFixed(2)}</h2>
+               <a href="checkout.html" class="checkout-button">
+                   Proceed to Checkout
+               </a>`
+            : `<p>Final product prices will be confirmed.</p>
+               <a href="checkout.html" class="checkout-button">
+                   Continue
+               </a>`;
+    }
+
+    function removeItem(index) {
+        const cartItems = getCart();
+        cartItems.splice(index, 1);
+        localStorage.setItem("blendoraCart", JSON.stringify(cartItems));
+        displayCart();
+    }
+
+    displayCart();
+</script>
+
+</body>
+</html>

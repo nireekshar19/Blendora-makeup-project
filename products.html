@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Products | Blendora</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .products-page {
+            max-width: 1100px;
+            margin: auto;
+            padding: 45px 20px;
+        }
+
+        .products-heading {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .products-heading h1 {
+            color: #82415e;
+            font-size: 34px;
+        }
+
+        .products-heading p {
+            color: #777;
+            margin-top: 10px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            padding-bottom: 25px;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+        }
+
+        .product-card h2 {
+            color: #82415e;
+            margin: 18px 10px 8px;
+        }
+
+        .product-card p {
+            color: #666;
+            padding: 0 18px;
+            line-height: 1.6;
+        }
+
+        .product-price {
+            color: #82415e;
+            font-size: 21px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .product-button {
+            display: inline-block;
+            background: #a85d7c;
+            color: white;
+            border: none;
+            padding: 11px 25px;
+            border-radius: 25px;
+            margin: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .product-button:hover {
+            background: #82415e;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 35px;
+            color: #82415e;
+            text-decoration: none;
+        }
+
+        .cart-link {
+            float: right;
+            color: #82415e;
+            font-weight: bold;
+        }
+
+        #cartMessage {
+            text-align: center;
+            margin-top: 20px;
+            color: #34734a;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="header">
+    <a href="index.html" class="logo">Blendora<span>.</span></a>
+
+    <nav class="navbar">
+        <a href="index.html">Home</a>
+        <a href="quiz.html">Shade Quiz</a>
+        <a href="products.html">Products</a>
+        <a href="login.html">Login</a>
+    </nav>
+
+    <a href="cart.html" class="nav-button">
+        My Cart (<span id="cartCount">0</span>)
+    </a>
+</header>
+
+<main class="products-page">
+
+    <div class="products-heading">
+        <h1>Explore Our Products</h1>
+        <p>Beauty that blends perfectly with your skin.</p>
+    </div>
+
+    <div class="product-grid">
+
+        <div class="product-card">
+            <img src="images/foundation.jpg" alt="Custom blended foundation">
+
+            <h2>Custom-Blended Foundation</h2>
+
+            <p>
+                A personalized foundation designed around
+                your skin tone and undertone.
+            </p>
+
+            <div class="product-price">₹799</div>
+
+            <a href="quiz.html" class="product-button">Find My Shade</a>
+
+            <button class="product-button"
+                onclick="addToCart('foundation')">
+                Add to Cart
+            </button>
+        </div>
+
+        <div class="product-card">
+            <img src="images/concealer.jpg" alt="Custom blended concealer">
+
+            <h2>Custom-Blended Concealer</h2>
+
+            <p>
+                A personalized concealer selected according
+                to your skin profile.
+            </p>
+
+            <div class="product-price">₹499</div>
+
+            <a href="quiz.html" class="product-button">Find My Shade</a>
+
+            <button class="product-button"
+                onclick="addToCart('concealer')">
+                Add to Cart
+            </button>
+        </div>
+
+    </div>
+
+    <p id="cartMessage" role="status"></p>
+
+    <a href="index.html" class="back-link">← Back to Home</a>
+
+</main>
+
+<script>
+    const productData = {
+        foundation: {
+            id: "foundation",
+            name: "Custom-Blended Foundation",
+            price: 799,
+            image: "images/foundation.jpg"
+        },
+        concealer: {
+            id: "concealer",
+            name: "Custom-Blended Concealer",
+            price: 499,
+            image: "images/concealer.jpg"
+        }
+    };
+
+    function addToCart(productId) {
+        const product = productData[productId];
+
+        let cart = JSON.parse(
+            localStorage.getItem("blendoraCart") || "[]"
+        );
+
+        cart.push(product);
+
+        localStorage.setItem(
+            "blendoraCart",
+            JSON.stringify(cart)
+        );
+
+        updateCartCount();
+
+        document.getElementById("cartMessage").textContent =
+            product.name + " added to your cart!";
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(
+            localStorage.getItem("blendoraCart") || "[]"
+        );
+
+        document.getElementById("cartCount").textContent =
+            cart.length;
+    }
+
+    updateCartCount();
+</script>
+
+</body>
+</html>

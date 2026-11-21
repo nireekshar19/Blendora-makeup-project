@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Blendora</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f9e5ed, #f4cbd9);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 30px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #8b4564;
+            margin-bottom: 8px;
+        }
+
+        .login-card h2 {
+            color: #704052;
+            margin-bottom: 8px;
+        }
+
+        .login-card p {
+            color: #888;
+            margin-bottom: 25px;
+        }
+
+        .login-card label {
+            display: block;
+            text-align: left;
+            color: #704052;
+            margin: 15px 0 7px;
+            font-weight: bold;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .login-card button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 25px;
+            background: #a85d7c;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .login-card button:hover {
+            background: #82415e;
+        }
+
+        .message {
+            color: #b33;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 22px;
+            color: #8b4564;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-card">
+
+        <div class="logo">Blendora</div>
+
+        <h2>Admin Login</h2>
+
+        <p>Sign in to manage your beauty store.</p>
+
+        <form id="adminLoginForm">
+
+            <label for="username">Admin Username</label>
+            <input type="text" id="username"
+                   placeholder="Enter username" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password"
+                   placeholder="Enter password" required>
+
+            <button type="submit">Login to Dashboard</button>
+
+            <div class="message" id="message"></div>
+
+        </form>
+
+        <a href="../index.html" class="back-link">
+            ← Back to Website
+        </a>
+
+    </div>
+
+    <script>
+        document.getElementById("adminLoginForm").addEventListener(
+            "submit", function(event) {
+
+                event.preventDefault();
+
+                const username =
+                    document.getElementById("username").value.trim();
+
+                const password =
+                    document.getElementById("password").value;
+
+                const message = document.getElementById("message");
+
+                // Temporary frontend demo login only.
+                // Replace with Firebase Authentication before deployment.
+
+                if (username === "admin" && password === "admin123") {
+
+                    sessionStorage.setItem("blendoraAdminLoggedIn", "true");
+
+                    window.location.href = "dashboard.html";
+
+                } else {
+
+                    message.textContent =
+                        "Invalid username or password. Please try again.";
+
+                }
+            }
+        );
+    </script>
+
+</body>
+</html>

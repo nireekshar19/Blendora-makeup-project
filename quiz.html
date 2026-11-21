@@ -1,0 +1,358 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Shade | Blendora</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            background: #fff8f4;
+        }
+
+        .quiz-container {
+            max-width: 850px;
+            margin: 45px auto;
+            padding: 25px;
+        }
+
+        .quiz-heading {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .quiz-heading h1 {
+            font-family: Georgia, serif;
+            font-size: 36px;
+            color: #65473e;
+            margin-bottom: 12px;
+        }
+
+        .quiz-heading p {
+            color: #88766e;
+        }
+
+        .quiz-card {
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            margin-bottom: 22px;
+            box-shadow: 0 5px 20px rgba(80,40,30,.06);
+        }
+
+        .quiz-card h2 {
+            font-size: 21px;
+            margin-bottom: 10px;
+        }
+
+        .quiz-card > p {
+            color: #88766e;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .tone-options {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .tone-option {
+            border: 2px solid #eee2dc;
+            border-radius: 12px;
+            padding: 9px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .tone-option:has(input:checked),
+        .choice:has(input:checked) {
+            border-color: #9b6658;
+            background: #fff1e9;
+        }
+
+        .tone-option img {
+            width: 100%;
+            height: 105px;
+            object-fit: cover;
+            border-radius: 8px;
+            display: block;
+            margin-bottom: 9px;
+        }
+
+        input[type="radio"] {
+            accent-color: #9b6658;
+        }
+
+        .choice-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .choice {
+            border: 1px solid #dfd1ca;
+            border-radius: 9px;
+            padding: 13px 17px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .choice input {
+            margin-right: 7px;
+        }
+
+        .progress-track {
+            height: 7px;
+            background: #eadbd3;
+            border-radius: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #9b6658;
+            transition: .3s;
+        }
+
+        .quiz-button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 10px;
+            background: #9b6658;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .quiz-button:hover {
+            background: #70483e;
+        }
+
+        .back-home {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #9b6658;
+        }
+
+        @media(max-width: 600px) {
+            .tone-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quiz-container {
+                padding: 15px;
+            }
+
+            .quiz-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="quiz-container">
+
+    <header class="quiz-heading">
+        <h1>Find Your Perfect Shade</h1>
+        <p>Let's discover the perfect match for your skin.</p>
+
+        <div class="progress-track">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <p id="progressText">0 of 4 questions completed</p>
+    </header>
+
+    <form id="shadeQuiz">
+
+        <!-- QUESTION 1 -->
+        <section class="quiz-card">
+            <h2>1. What is your skin tone?</h2>
+            <p>Select the closest match to your natural skin tone.</p>
+
+            <div class="tone-options">
+
+                <label class="tone-option">
+                    <img src="images/skin-tones/fair.jpg" alt="Fair skin">
+                    <input type="radio" name="skinTone" value="Fair" required>
+                    Fair
+                </label>
+
+                <label class="tone-option">
+                    <img src="images/skin-tones/light.jpg" alt="Light skin">
+                    <input type="radio" name="skinTone" value="Light">
+                    Light
+                </label>
+
+                <label class="tone-option">
+                    <img src="images/skin-tones/medium.jpg" alt="Medium skin">
+                    <input type="radio" name="skinTone" value="Medium">
+                    Medium
+                </label>
+
+                <label class="tone-option">
+                    <img src="images/skin-tones/tan.jpg" alt="Tan skin">
+                    <input type="radio" name="skinTone" value="Tan">
+                    Tan
+                </label>
+
+                <label class="tone-option">
+                    <img src="images/skin-tones/deep.jpg" alt="Deep skin">
+                    <input type="radio" name="skinTone" value="Deep">
+                    Deep
+                </label>
+
+            </div>
+        </section>
+
+        <!-- QUESTION 2 -->
+        <section class="quiz-card">
+            <h2>2. What is your undertone?</h2>
+            <p>Choose your natural skin undertone.</p>
+
+            <div class="choice-options">
+                <label class="choice">
+                    <input type="radio" name="undertone" value="Warm" required>
+                    Warm
+                </label>
+
+                <label class="choice">
+                    <input type="radio" name="undertone" value="Cool">
+                    Cool
+                </label>
+
+                <label class="choice">
+                    <input type="radio" name="undertone" value="Neutral">
+                    Neutral
+                </label>
+
+                <label class="choice">
+                    <input type="radio" name="undertone" value="Not sure">
+                    Not sure
+                </label>
+            </div>
+        </section>
+
+        <!-- QUESTION 3 -->
+        <section class="quiz-card">
+            <h2>3. What is your skin type?</h2>
+            <p>Select your usual skin type.</p>
+
+            <div class="choice-options">
+                <label class="choice">
+                    <input type="radio" name="skinType" value="Oily" required>
+                    Oily
+                </label>
+
+                <label class="choice">
+                    <input type="radio" name="skinType" value="Dry">
+                    Dry
+                </label>
+
+                <label class="choice">
+                    <input type="radio" name="skinType" value="Combination">
+                    Combination
+                </label>
+
+                <label class="choice">
+                    <input type="radio" name="skinType" value="Normal">
+                    Normal
+                </label>
+            </div>
+        </section>
+
+        <!-- QUESTION 4 -->
+        <section class="quiz-card">
+            <h2>4. What coverage do you prefer?</h2>
+            <p>Choose your preferred foundation coverage.</p>
+
+            <div class="choice-options">
+                <label class="choice">
+                    <input type="radio" name="coverage" value="Light" required>
+                    Light
+                </label>
+
+                <label class="choice">
+                    <input type="radio" name="coverage" value="Medium">
+                    Medium
+                </label>
+
+                <label class="choice">
+                    <input type="radio" name="coverage" value="Full">
+                    Full
+                </label>
+            </div>
+        </section>
+
+        <button type="submit" class="quiz-button">
+            Find My Perfect Shade →
+        </button>
+
+    </form>
+
+    <a href="index.html" class="back-home">← Back to Home</a>
+
+</div>
+
+<script>
+    const quizForm = document.getElementById("shadeQuiz");
+
+    const questionNames = [
+        "skinTone",
+        "undertone",
+        "skinType",
+        "coverage"
+    ];
+
+    function updateProgress() {
+        let completed = 0;
+
+        questionNames.forEach(function(name) {
+            if (quizForm.querySelector(
+                `input[name="${name}"]:checked`
+            )) {
+                completed++;
+            }
+        });
+
+        document.getElementById("progress").style.width =
+            (completed / 4 * 100) + "%";
+
+        document.getElementById("progressText").textContent =
+            completed + " of 4 questions completed";
+    }
+
+    quizForm.addEventListener("change", updateProgress);
+
+    quizForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const answers = {};
+
+        questionNames.forEach(function(name) {
+            answers[name] = quizForm.querySelector(
+                `input[name="${name}"]:checked`
+            ).value;
+        });
+
+        localStorage.setItem(
+            "blendoraQuizAnswers",
+            JSON.stringify(answers)
+        );
+
+        window.location.href = "results.html";
+    });
+</script>
+
+</body>
+</html>

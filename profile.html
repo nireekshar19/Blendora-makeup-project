@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Profile | Blendora</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #fff7fa;
+            font-family: Arial, sans-serif;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 8%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        nav h2 {
+            color: #82415e;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #82415e;
+            margin-left: 18px;
+        }
+
+        .profile-container {
+            max-width: 550px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #82415e;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 7px;
+            color: #704052;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .save-button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 22px;
+            border: none;
+            border-radius: 25px;
+            background: #a85d7c;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            background: #82415e;
+        }
+
+        .logout-button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            border: 1px solid #a85d7c;
+            border-radius: 25px;
+            background: white;
+            color: #82415e;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .message {
+            text-align: center;
+            color: green;
+            margin-top: 15px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #82415e;
+            text-decoration: none;
+        }
+
+        @media(max-width: 600px) {
+            nav {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            nav a {
+                margin: 5px;
+            }
+
+            .profile-container {
+                margin: 25px 15px;
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <h2>Blendora</h2>
+
+        <div>
+            <a href="index.html">Home</a>
+            <a href="orders.html">My Orders</a>
+            <a href="profile.html">My Profile</a>
+            <a href="login.html">Login</a>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+
+        <h1>My Profile</h1>
+
+        <p class="subtitle">
+            Manage your personal information
+        </p>
+
+        <form id="profileForm">
+
+            <label for="name">Full Name</label>
+            <input
+                type="text"
+                id="name"
+                placeholder="Enter your full name"
+                required
+            >
+
+            <label for="email">Email Address</label>
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+                required
+            >
+
+            <label for="phone">Mobile Number</label>
+            <input
+                type="tel"
+                id="phone"
+                placeholder="Enter 10-digit mobile number"
+                pattern="[0-9]{10}"
+                maxlength="10"
+                required
+            >
+
+            <label for="address">Address</label>
+            <textarea
+                id="address"
+                placeholder="Enter your address"
+            ></textarea>
+
+            <button type="submit" class="save-button">
+                Save Profile
+            </button>
+
+            <p class="message" id="message"></p>
+
+        </form>
+
+        <button
+            type="button"
+            class="logout-button"
+            id="logoutButton"
+        >
+            Logout
+        </button>
+
+        <a href="index.html" class="back-link">
+            ← Back to Home
+        </a>
+
+    </div>
+
+    <script>
+
+        // Load saved profile information
+        function loadProfile() {
+
+            const savedProfile = localStorage.getItem(
+                "blendoraProfile"
+            );
+
+            if (!savedProfile) return;
+
+            try {
+
+                const profile = JSON.parse(savedProfile);
+
+                document.getElementById("name").value =
+                    profile.name || "";
+
+                document.getElementById("email").value =
+                    profile.email || "";
+
+                document.getElementById("phone").value =
+                    profile.phone || "";
+
+                document.getElementById("address").value =
+                    profile.address || "";
+
+            } catch (error) {
+
+                console.error("Unable to load profile:", error);
+
+            }
+        }
+
+
+        // Save profile information
+        function saveProfile(profile) {
+
+            let profiles = [];
+
+            try {
+
+                profiles = JSON.parse(
+                    localStorage.getItem("blendoraProfiles") || "[]"
+                );
+
+                if (!Array.isArray(profiles)) {
+                    profiles = [];
+                }
+
+            } catch (error) {
+
+                profiles = [];
+
+            }
+
+            // Find existing customer using email
+            const existingIndex = profiles.findIndex(function(item) {
+
+                return item.email &&
+                    item.email.toLowerCase() ===
+                    profile.email.toLowerCase();
+
+            });
+
+            // Update existing profile or add new customer
+            if (existingIndex >= 0) {
+
+                profiles[existingIndex] = profile;
+
+            } else {
+
+                profiles.push(profile);
+
+            }
+
+            // Save customer list for Admin Panel
+            localStorage.setItem(
+                "blendoraProfiles",
+                JSON.stringify(profiles)
+            );
+
+            // Save current customer's profile
+            localStorage.setItem(
+                "blendoraProfile",
+                JSON.stringify(profile)
+            );
+
+            return true;
+        }
+
+
+        // Handle profile form submission
+        document.getElementById("profileForm")
+            .addEventListener("submit", function(event) {
+
+                event.preventDefault();
+
+                const profile = {
+
+                    name: document.getElementById("name").value.trim(),
+
+                    email: document.getElementById("email")
+                        .value.trim().toLowerCase(),
+
+                    phone: document.getElementById("phone").value.trim(),
+
+                    address: document.getElementById("address")
+                        .value.trim()
+
+                };
+
+                saveProfile(profile);
+
+                document.getElementById("message").textContent =
+                    "Profile saved successfully!";
+
+            });
+
+
+        // Logout
+        document.getElementById("logoutButton")
+            .addEventListener("click", function() {
+
+                const confirmLogout = confirm(
+                    "Are you sure you want to logout?"
+                );
+
+                if (confirmLogout) {
+
+                    window.location.href = "login.html";
+
+                }
+
+            });
+
+
+        // Load profile when page opens
+        loadProfile();
+
+    </script>
+
+</body>
+</html>

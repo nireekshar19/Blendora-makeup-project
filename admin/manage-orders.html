@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders | Blendora Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #faf5f7;
+        }
+
+        .sidebar {
+            width: 230px;
+            min-height: 100vh;
+            background: #82415e;
+            color: white;
+            position: fixed;
+            padding: 25px 15px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 13px;
+            margin: 7px 0;
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #a85d7c;
+        }
+
+        .main-content {
+            margin-left: 230px;
+            padding: 30px;
+        }
+
+        h1, h2 {
+            color: #82415e;
+        }
+
+        .orders-section {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-top: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 850px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 13px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8e6ed;
+            color: #82415e;
+        }
+
+        select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 7px;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #82415e;
+            text-decoration: none;
+        }
+
+        @media(max-width: 750px) {
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: relative;
+            }
+
+            .sidebar a {
+                display: inline-block;
+                padding: 10px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <h2>Blendora Admin</h2>
+
+        <a href="dashboard.html">Dashboard</a>
+        <a href="users.html">Manage Users</a>
+        <a href="manage-products.html">Manage Products</a>
+        <a href="manage-orders.html" class="active">Manage Orders</a>
+        <a href="manage-blends.html">Blend Requests</a>
+        <a href="reports.html">Reports</a>
+    </aside>
+
+    <main class="main-content">
+
+        <h1>Manage Orders</h1>
+        <p>View customer orders and update their order status.</p>
+
+        <section class="orders-section">
+
+            <h2>Customer Orders</h2>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer Name</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Total Amount</th>
+                            <th>Payment</th>
+                            <th>Order Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="ordersTable"></tbody>
+                </table>
+            </div>
+
+            <p class="empty-message" id="emptyMessage"></p>
+
+        </section>
+
+        <a href="dashboard.html" class="back-link">
+            ← Back to Dashboard
+        </a>
+
+    </main>
+
+    <script>
+        if (sessionStorage.getItem("blendoraAdminLoggedIn") !== "true") {
+            window.location.replace("admin-login.html");
+        }
+
+        const ordersTable = document.getElementById("ordersTable");
+        const emptyMessage = document.getElementById("emptyMessage");
+
+        function getOrders() {
+            return JSON.parse(
+                localStorage.getItem("blendoraOrders") || "[]"
+            );
+        }
+
+        function displayOrders() {
+
+            const orders = getOrders();
+
+            ordersTable.innerHTML = "";
+
+            if (orders.length === 0) {
+                emptyMessage.textContent = "No orders received yet.";
+                return;
+            }
+
+            emptyMessage.textContent = "";
+
+            orders.forEach(function(order, index) {
+
+                const row = document.createElement("tr");
+
+                const orderId = order.id || ("ORD" + (index + 1));
+
+                const cells = [
+                    orderId,
+                    order.name || order.fullName || "Not provided",
+                    order.phone || order.mobile || "Not provided",
+                    order.address || order.fullAddress || "Not provided",
+                    "₹" + Number(order.total || order.totalAmount || 0).toFixed(2),
+                    order.paymentMethod || "COD"
+                ];
+
+                cells.forEach(function(value) {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                const statusCell = document.createElement("td");
+
+                const statusSelect = document.createElement("select");
+
+                const statuses = [
+                    "Pending",
+                    "Confirmed",
+                    "Processing",
+                    "Shipped",
+                    "Delivered",
+                    "Cancelled"
+                ];
+
+                statuses.forEach(function(status) {
+                    const option = document.createElement("option");
+                    option.value = status;
+                    option.textContent = status;
+                    statusSelect.appendChild(option);
+                });
+
+                statusSelect.value = order.status || "Pending";
+
+                statusSelect.addEventListener("change", function() {
+
+                    const updatedOrders = getOrders();
+
+                    updatedOrders[index].status = statusSelect.value;
+
+                    localStorage.setItem(
+                        "blendoraOrders",
+                        JSON.stringify(updatedOrders)
+                    );
+                });
+
+                statusCell.appendChild(statusSelect);
+                row.appendChild(statusCell);
+
+                ordersTable.appendChild(row);
+            });
+        }
+
+        displayOrders();
+    </script>
+
+</body>
+</html>

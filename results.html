@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Shade Results | Blendora</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            background: #fff8f4;
+        }
+
+        .results-container {
+            max-width: 950px;
+            margin: 45px auto;
+            padding: 25px;
+        }
+
+        .results-heading {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .results-heading h1 {
+            font-family: Georgia, serif;
+            font-size: 38px;
+            color: #65473e;
+            margin-bottom: 12px;
+        }
+
+        .results-heading p {
+            color: #88766e;
+            line-height: 1.7;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 22px rgba(80,40,30,.07);
+        }
+
+        .result-card h2 {
+            color: #65473e;
+            margin-bottom: 18px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .product-result {
+            background: #fff8f4;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .product-result img {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .product-result h3 {
+            color: #65473e;
+            margin-bottom: 10px;
+        }
+
+        .shade-name {
+            color: #9b6658;
+            font-weight: bold;
+            font-size: 17px;
+            margin: 10px 0;
+        }
+
+        .answer-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .answer-item {
+            background: #fff8f4;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .answer-item span {
+            display: block;
+            color: #88766e;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .answer-item strong {
+            color: #65473e;
+        }
+
+        .result-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .result-button {
+            padding: 14px 25px;
+            border-radius: 30px;
+            background: #9b6658;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .secondary-button {
+            background: white;
+            color: #9b6658;
+            border: 1px solid #9b6658;
+        }
+
+        .notice {
+            color: #88766e;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
+
+        .missing-result {
+            text-align: center;
+            padding: 35px;
+        }
+
+        @media(max-width: 650px) {
+            .result-grid,
+            .answer-list {
+                grid-template-columns: 1fr;
+            }
+
+            .results-heading h1 {
+                font-size: 30px;
+            }
+
+            .result-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="results-container">
+
+    <header class="results-heading">
+        <h1>Your Beauty Profile</h1>
+        <p>Here is your personalized shade profile based on your quiz answers.</p>
+    </header>
+
+    <div id="resultsContent">
+
+        <section class="result-card">
+            <h2>Your Recommended Products</h2>
+
+            <div class="result-grid">
+
+                <div class="product-result">
+                    <img src="images/foundation.jpg" alt="Foundation">
+                    <h3>Custom Foundation</h3>
+                    <p>Your selected skin tone</p>
+                    <div class="shade-name" id="foundationShade">Loading...</div>
+                </div>
+
+                <div class="product-result">
+                    <img src="images/concealer.jpg" alt="Concealer">
+                    <h3>Custom Concealer</h3>
+                    <p>Your personalized complexion profile</p>
+                    <div class="shade-name" id="concealerShade">Loading...</div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="result-card">
+            <h2>Your Quiz Answers</h2>
+
+            <div class="answer-list">
+
+                <div class="answer-item">
+                    <span>Skin Tone</span>
+                    <strong id="skinTone">-</strong>
+                </div>
+
+                <div class="answer-item">
+                    <span>Undertone</span>
+                    <strong id="undertone">-</strong>
+                </div>
+
+                <div class="answer-item">
+                    <span>Skin Type</span>
+                    <strong id="skinType">-</strong>
+                </div>
+
+                <div class="answer-item">
+                    <span>Coverage Preference</span>
+                    <strong id="coverage">-</strong>
+                </div>
+
+            </div>
+
+            <p class="notice">
+                Note: These are preliminary shade suggestions based on your
+                self-selected answers, not verified skin matching. Final
+                shade selection requires product testing or expert review.
+            </p>
+        </section>
+
+        <div class="result-buttons">
+            <button class="result-button" onclick="goToProducts()">
+                Explore Products →
+            </button>
+
+            <button class="result-button secondary-button" onclick="retakeQuiz()">
+                Retake Quiz
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const savedAnswers = localStorage.getItem("blendoraQuizAnswers");
+
+    if (!savedAnswers) {
+
+        document.getElementById("resultsContent").innerHTML = `
+            <section class="result-card missing-result">
+                <h2>No Quiz Results Found</h2>
+                <p>Please complete the Skin Tone Quiz first.</p>
+                <br>
+                <a href="quiz.html" class="result-button">
+                    Take the Quiz
+                </a>
+            </section>
+        `;
+
+    } else {
+
+        const answers = JSON.parse(savedAnswers);
+
+        document.getElementById("skinTone").textContent =
+            answers.skinTone;
+
+        document.getElementById("undertone").textContent =
+            answers.undertone;
+
+        document.getElementById("skinType").textContent =
+            answers.skinType;
+
+        document.getElementById("coverage").textContent =
+            answers.coverage;
+
+        document.getElementById("foundationShade").textContent =
+            answers.skinTone + " / " + answers.undertone;
+
+        document.getElementById("concealerShade").textContent =
+            answers.skinTone + " / " + answers.undertone;
+    }
+
+    function goToProducts() {
+        window.location.href = "products.html";
+    }
+
+    function retakeQuiz() {
+        window.location.href = "quiz.html";
+    }
+</script>
+
+</body>
+</html>

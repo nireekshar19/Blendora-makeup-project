@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products | Blendora Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #faf5f7;
+        }
+
+        .sidebar {
+            width: 230px;
+            min-height: 100vh;
+            background: #82415e;
+            color: white;
+            position: fixed;
+            padding: 25px 15px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 13px;
+            margin: 7px 0;
+            border-radius: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #a85d7c;
+        }
+
+        .main-content {
+            margin-left: 230px;
+            padding: 30px;
+        }
+
+        h1, h2 {
+            color: #82415e;
+        }
+
+        .product-form,
+        .products-section {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 7px;
+            color: #704052;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .add-button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 13px;
+            background: #a85d7c;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8e6ed;
+            color: #82415e;
+        }
+
+        .delete-button {
+            background: #f8e0e0;
+            color: #a33;
+            border: none;
+            padding: 8px 13px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        .empty-message {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+        }
+
+        .message {
+            color: #34734a;
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #82415e;
+            text-decoration: none;
+        }
+
+        @media(max-width: 750px) {
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: relative;
+            }
+
+            .sidebar a {
+                display: inline-block;
+                padding: 10px;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <h2>Blendora Admin</h2>
+
+        <a href="dashboard.html">Dashboard</a>
+        <a href="users.html">Manage Users</a>
+        <a href="manage-products.html" class="active">Manage Products</a>
+        <a href="manage-orders.html">Manage Orders</a>
+        <a href="manage-blends.html">Blend Requests</a>
+        <a href="reports.html">Reports</a>
+
+    </aside>
+
+    <main class="main-content">
+
+        <h1>Manage Products</h1>
+
+        <p>Add, view and manage products in your store.</p>
+
+        <section class="product-form">
+
+            <h2>Add New Product</h2>
+
+            <form id="productForm">
+
+                <label for="productName">Product Name</label>
+                <input type="text" id="productName"
+                       placeholder="Enter product name" required>
+
+                <label for="category">Category</label>
+                <select id="category" required>
+                    <option value="">Select category</option>
+                    <option value="Foundation">Foundation</option>
+                    <option value="Concealer">Concealer</option>
+                </select>
+
+                <label for="price">Price (₹)</label>
+                <input type="number" id="price"
+                       min="0" step="0.01"
+                       placeholder="Enter price" required>
+
+                <label for="description">Description</label>
+                <textarea id="description"
+                          placeholder="Enter product description"
+                          required></textarea>
+
+                <button type="submit" class="add-button">
+                    Add Product
+                </button>
+
+                <p class="message" id="message"></p>
+
+            </form>
+
+        </section>
+
+        <section class="products-section">
+
+            <h2>Product List</h2>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Sl. No.</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Description</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="productsTable"></tbody>
+
+                </table>
+
+            </div>
+
+            <p class="empty-message" id="emptyMessage"></p>
+
+        </section>
+
+        <a href="dashboard.html" class="back-link">
+            ← Back to Dashboard
+        </a>
+
+    </main>
+
+    <script>
+        if (sessionStorage.getItem("blendoraAdminLoggedIn") !== "true") {
+            window.location.replace("admin-login.html");
+        }
+
+        const productForm = document.getElementById("productForm");
+        const productsTable = document.getElementById("productsTable");
+        const emptyMessage = document.getElementById("emptyMessage");
+
+        function getProducts() {
+            return JSON.parse(
+                localStorage.getItem("blendoraProducts") || "[]"
+            );
+        }
+
+        function displayProducts() {
+
+            const products = getProducts();
+
+            productsTable.innerHTML = "";
+
+            if (products.length === 0) {
+                emptyMessage.textContent = "No products added yet.";
+                return;
+            }
+
+            emptyMessage.textContent = "";
+
+            products.forEach(function(product, index) {
+
+                const row = document.createElement("tr");
+
+                const values = [
+                    index + 1,
+                    product.name,
+                    product.category,
+                    "₹" + Number(product.price).toFixed(2),
+                    product.description
+                ];
+
+                values.forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                const actionCell = document.createElement("td");
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.className = "delete-button";
+
+                deleteButton.addEventListener("click", function() {
+
+                    if (!confirm("Delete this product?")) return;
+
+                    const updatedProducts = getProducts();
+
+                    updatedProducts.splice(index, 1);
+
+                    localStorage.setItem(
+                        "blendoraProducts",
+                        JSON.stringify(updatedProducts)
+                    );
+
+                    displayProducts();
+                });
+
+                actionCell.appendChild(deleteButton);
+                row.appendChild(actionCell);
+
+                productsTable.appendChild(row);
+            });
+        }
+
+        productForm.addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const product = {
+                id: "PRD" + Date.now(),
+                name: document.getElementById("productName").value.trim(),
+                category: document.getElementById("category").value,
+                price: Number(document.getElementById("price").value),
+                description: document.getElementById("description").value.trim()
+            };
+
+            const products = getProducts();
+
+            products.push(product);
+
+            localStorage.setItem(
+                "blendoraProducts",
+                JSON.stringify(products)
+            );
+
+            document.getElementById("message").textContent =
+                "Product added successfully!";
+
+            productForm.reset();
+
+            displayProducts();
+        });
+
+        displayProducts();
+    </script>
+
+</body>
+</html>
