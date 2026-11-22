@@ -103,6 +103,12 @@
             margin-top: 20px;
             color: #34734a;
         }
+
+        #apiStatus {
+            text-align: center;
+            color: #82415e;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 
@@ -130,49 +136,9 @@
         <p>Beauty that blends perfectly with your skin.</p>
     </div>
 
-    <div class="product-grid">
+    <p id="apiStatus">Loading products...</p>
 
-        <div class="product-card">
-            <img src="images/foundation.jpg" alt="Custom blended foundation">
-
-            <h2>Custom-Blended Foundation</h2>
-
-            <p>
-                A personalized foundation designed around
-                your skin tone and undertone.
-            </p>
-
-            <div class="product-price">₹799</div>
-
-            <a href="quiz.html" class="product-button">Find My Shade</a>
-
-            <button class="product-button"
-                onclick="addToCart('foundation')">
-                Add to Cart
-            </button>
-        </div>
-
-        <div class="product-card">
-            <img src="images/concealer.jpg" alt="Custom blended concealer">
-
-            <h2>Custom-Blended Concealer</h2>
-
-            <p>
-                A personalized concealer selected according
-                to your skin profile.
-            </p>
-
-            <div class="product-price">₹499</div>
-
-            <a href="quiz.html" class="product-button">Find My Shade</a>
-
-            <button class="product-button"
-                onclick="addToCart('concealer')">
-                Add to Cart
-            </button>
-        </div>
-
-    </div>
+    <div class="product-grid" id="productGrid"></div>
 
     <p id="cartMessage" role="status"></p>
 
@@ -181,29 +147,109 @@
 </main>
 
 <script>
-    const productData = {
-        foundation: {
-            id: "foundation",
-            name: "Custom-Blended Foundation",
-            price: 799,
-            image: "images/foundation.jpg"
-        },
-        concealer: {
-            id: "concealer",
-            name: "Custom-Blended Concealer",
-            price: 499,
-            image: "images/concealer.jpg"
-        }
+    const API_BASE_URL =
+        "https://blendora-makeup-project.onrender.com";
+
+    const imageMap = {
+        1: "images/foundation.jpg",
+        2: "images/concealer.jpg"
     };
 
-    function addToCart(productId) {
-        const product = productData[productId];
+    const descriptionMap = {
+        1: "A personalized foundation designed around your skin tone and undertone.",
+        2: "A personalized concealer selected according to your skin profile."
+    };
 
-        let cart = JSON.parse(
+    let productData = [];
+
+    async function loadProducts() {
+        const status = document.getElementById("apiStatus");
+        const grid = document.getElementById("productGrid");
+
+        try {
+            const response = await fetch(
+                `${API_BASE_URL}/api/products`
+            );
+
+            if (!response.ok) {
+                throw new Error("Unable to load products");
+            }
+
+            productData = await response.json();
+
+            grid.innerHTML = "";
+
+            productData.forEach(product => {
+                const image = imageMap[product.id] ||
+                    "images/products.jpg";
+
+                const description = descriptionMap[product.id] ||
+                    "Explore our personalized beauty product.";
+
+                const card = document.createElement("div");
+                card.className = "product-card";
+
+                const img = document.createElement("img");
+                img.src = image;
+                img.alt = product.name;
+
+                const heading = document.createElement("h2");
+                heading.textContent = product.name;
+
+                const paragraph = document.createElement("p");
+                paragraph.textContent = description;
+
+                const price = document.createElement("div");
+                price.className = "product-price";
+                price.textContent = "₹" + product.price;
+
+                const shadeLink = document.createElement("a");
+                shadeLink.href = "quiz.html";
+                shadeLink.className = "product-button";
+                shadeLink.textContent = "Find My Shade";
+
+                const cartButton = document.createElement("button");
+                cartButton.className = "product-button";
+                cartButton.textContent = "Add to Cart";
+                cartButton.addEventListener("click", () => {
+                    addToCart(product);
+                });
+
+                card.append(
+                    img,
+                    heading,
+                    paragraph,
+                    price,
+                    shadeLink,
+                    cartButton
+                );
+
+                grid.appendChild(card);
+            });
+
+            status.textContent = "Products loaded successfully!";
+
+        } catch (error) {
+            console.error("Product loading error:", error);
+
+            status.textContent =
+                "Unable to load products. Please refresh the page.";
+        }
+    }
+
+    function addToCart(product) {
+        const cart = JSON.parse(
             localStorage.getItem("blendoraCart") || "[]"
         );
 
-        cart.push(product);
+        const cartProduct = {
+            id: String(product.id),
+            name: product.name,
+            price: Number(product.price),
+            image: imageMap[product.id] || "images/products.jpg"
+        };
+
+        cart.push(cartProduct);
 
         localStorage.setItem(
             "blendoraCart",
@@ -226,6 +272,7 @@
     }
 
     updateCartCount();
+    loadProducts();
 </script>
 
 </body>
