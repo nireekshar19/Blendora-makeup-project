@@ -7,23 +7,14 @@ const {
 
 const { getFirestore } = require("firebase-admin/firestore");
 const { getAuth } = require("firebase-admin/auth");
-const fs = require("fs");
-const path = require("path");
 
-const localKeyPath = path.join(__dirname, "serviceAccountKey.json");
-const renderKeyPath = "/etc/secrets/serviceAccountKey.json";
+const serviceAccountJSON = process.env.FIREBASE_SERVICE_ACCOUNT;
 
-const keyPath = fs.existsSync(renderKeyPath)
-    ? renderKeyPath
-    : localKeyPath;
-
-if (!fs.existsSync(keyPath)) {
-    throw new Error("Firebase service account key not found!");
+if (!serviceAccountJSON) {
+    throw new Error("FIREBASE_SERVICE_ACCOUNT environment variable is missing!");
 }
 
-const serviceAccount = JSON.parse(
-    fs.readFileSync(keyPath, "utf8")
-);
+const serviceAccount = JSON.parse(serviceAccountJSON);
 
 const app = getApps().length
     ? getApps()[0]
