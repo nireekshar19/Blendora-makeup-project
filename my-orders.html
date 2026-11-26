@@ -72,7 +72,7 @@ import { onAuthStateChanged } from
     "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const ordersContainer = document.getElementById("orders");
-const API_BASE = "http://localhost:5000";
+const API_BASE = "https://blendora-makeup-project-7.onrender.com";
 
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
