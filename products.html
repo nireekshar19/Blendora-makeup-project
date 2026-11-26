@@ -73,14 +73,27 @@ const status = document.getElementById("apiStatus");
 
 function getCart() {
     try {
-        return JSON.parse(localStorage.getItem("blendoraCart") || "[]");
+        return JSON.parse(
+            localStorage.getItem("blendoraCart") || "[]"
+        );
     } catch {
         return [];
     }
 }
 
 function updateCartCount() {
-    document.getElementById("cartCount").textContent = getCart().length;
+    document.getElementById("cartCount").textContent =
+        getCart().length;
+}
+
+function getProductImage(category) {
+    const type = String(category || "").toLowerCase();
+
+    if (type.includes("concealer")) {
+        return "images/concealer.jpg";
+    }
+
+    return "images/foundation.jpg";
 }
 
 function addToCart(product) {
@@ -89,12 +102,17 @@ function addToCart(product) {
     cart.push({
         id: product.id,
         name: product.name,
-        price: Number(product.price),
-        image: "images/products.jpg",
-        shade: product.shade || ""
+        price: Number(product.price || 0),
+        image: getProductImage(product.category),
+        shade: product.shade || "",
+        quantity: 1
     });
 
-    localStorage.setItem("blendoraCart", JSON.stringify(cart));
+    localStorage.setItem(
+        "blendoraCart",
+        JSON.stringify(cart)
+    );
+
     updateCartCount();
 
     document.getElementById("cartMessage").textContent =
@@ -110,8 +128,14 @@ function createProductCard(doc) {
 
     const image = document.createElement("img");
     image.className = "product-image";
-    image.src = "images/products.jpg";
+    image.src = getProductImage(product.category);
     image.alt = product.name || "Blendora makeup product";
+
+    image.onerror = function() {
+        this.onerror = null;
+        this.alt = "Foundation image unavailable";
+        console.error("Product image not found:", this.src);
+    };
 
     const category = document.createElement("p");
     category.className = "product-category";
@@ -121,28 +145,36 @@ function createProductCard(doc) {
     heading.textContent = product.name || "Blendora Product";
 
     const description = document.createElement("p");
-    description.textContent = product.description || "Discover your perfect beauty match.";
+    description.textContent =
+        product.description ||
+        "Discover your perfect beauty match.";
 
     const shade = document.createElement("p");
-    shade.textContent = "Shade: " + (product.shade || "Various");
+    shade.textContent =
+        "Shade: " + (product.shade || "Various");
 
     const price = document.createElement("div");
     price.className = "product-price";
-    price.textContent = "₹" + Number(product.price || 0);
+    price.textContent =
+        "₹" + Number(product.price || 0);
 
     const detailsLink = document.createElement("a");
-    detailsLink.href = "product-details.html?id=" + encodeURIComponent(productId);
+    detailsLink.href =
+        "product-details.html?id=" +
+        encodeURIComponent(productId);
     detailsLink.className = "product-button";
     detailsLink.textContent = "View Details";
 
     const cartButton = document.createElement("button");
     cartButton.className = "product-button";
     cartButton.textContent = "Add to Cart";
-    cartButton.onclick = () => {
+
+    cartButton.onclick = function() {
         addToCart({
             id: productId,
-            name: product.name,
+            name: product.name || "Blendora Product",
             price: product.price,
+            category: product.category,
             shade: product.shade
         });
     };
@@ -166,22 +198,26 @@ async function loadProducts() {
         status.textContent = "Loading products...";
         grid.innerHTML = "";
 
-        const snapshot = await db.collection("products").get();
+        const snapshot =
+            await db.collection("products").get();
 
         if (snapshot.empty) {
             status.textContent = "No products available yet.";
             return;
         }
 
-        snapshot.forEach(doc => {
+        snapshot.forEach(function(doc) {
             grid.appendChild(createProductCard(doc));
         });
 
-        status.textContent = "Explore products from Blendora vendors.";
+        status.textContent =
+            "Explore products from Blendora vendors.";
 
     } catch (error) {
         console.error("Product loading error:", error);
-        status.textContent = "Unable to load products. Please refresh.";
+
+        status.textContent =
+            "Unable to load products. Please refresh.";
     }
 }
 
