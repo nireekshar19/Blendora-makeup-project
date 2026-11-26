@@ -2,133 +2,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cart | Blendora</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Cart | Blendora</title>
+<link rel="stylesheet" href="css/style.css">
 
-    <style>
-        .cart-container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
-        }
+<style>
+.cart-container {
+    max-width: 1000px;
+    margin: 45px auto;
+    padding: 20px;
+}
 
-        .cart-heading {
-            text-align: center;
-            color: #8b4564;
-            margin-bottom: 30px;
-        }
+.cart-heading {
+    text-align: center;
+    color: #82415e;
+    margin-bottom: 30px;
+}
 
-        .cart-box {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        }
+.cart-item {
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    gap: 20px;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    margin-bottom: 18px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+}
 
-        .cart-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border-bottom: 1px solid #eee;
-            padding: 18px 0;
-        }
+.cart-item img {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #f8e9ed;
+}
 
-        .cart-item img {
-            width: 110px;
-            height: 110px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
+.cart-item h3 {
+    color: #82415e;
+    margin-bottom: 8px;
+}
 
-        .cart-info { flex: 1; }
+.cart-item p {
+    color: #666;
+    margin: 6px 0;
+}
 
-        .cart-info h3 {
-            color: #8b4564;
-            margin: 0 0 8px;
-        }
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+}
 
-        .cart-info p {
-            color: #666;
-            margin: 5px 0;
-        }
+.quantity-controls button {
+    background: #a85d7c;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+}
 
-        .remove-button {
-            background: #f5e5eb;
-            color: #8b4564;
-            border: none;
-            padding: 9px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
+.remove-button {
+    background: #f5e4eb;
+    color: #82415e;
+    border: none;
+    padding: 9px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 10px;
+}
 
-        .cart-total {
-            text-align: right;
-            margin-top: 25px;
-            color: #8b4564;
-        }
+.item-price {
+    color: #82415e;
+    font-size: 20px;
+    font-weight: bold;
+}
 
-        .checkout-button {
-            display: inline-block;
-            background: #a85d7c;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 25px;
-            text-decoration: none;
-            margin-top: 12px;
-        }
+.cart-summary {
+    background: #fff7fa;
+    padding: 25px;
+    border-radius: 15px;
+    margin-top: 25px;
+    text-align: right;
+}
 
-        .empty-cart {
-            text-align: center;
-            color: #777;
-            padding: 35px 10px;
-        }
+.cart-summary h2 {
+    color: #82415e;
+}
 
-        .back-link {
-            display: inline-block;
-            margin-top: 25px;
-            color: #8b4564;
-            text-decoration: none;
-        }
+.checkout-button {
+    display: inline-block;
+    background: #a85d7c;
+    color: white;
+    padding: 13px 28px;
+    border: none;
+    border-radius: 25px;
+    text-decoration: none;
+    cursor: pointer;
+    margin-top: 15px;
+}
 
-        @media(max-width: 550px) {
-            .cart-item {
-                align-items: flex-start;
-                flex-wrap: wrap;
-            }
+.checkout-button:hover {
+    background: #82415e;
+}
 
-            .cart-item img {
-                width: 85px;
-                height: 85px;
-            }
-        }
-    </style>
+.back-link {
+    display: inline-block;
+    margin-top: 25px;
+    color: #82415e;
+    text-decoration: none;
+}
+
+.empty-cart {
+    text-align: center;
+    color: #82415e;
+    padding: 40px 15px;
+}
+
+@media(max-width:600px) {
+    .cart-item {
+        grid-template-columns: 80px 1fr;
+        gap: 12px;
+        padding: 14px;
+    }
+
+    .cart-item img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .item-price {
+        grid-column: 2;
+    }
+}
+</style>
 </head>
 
 <body>
 
-<header>
-    <nav>
+<header class="header">
+    <a href="index.html" class="logo">Blendora<span>.</span></a>
+
+    <nav class="navbar">
         <a href="index.html">Home</a>
+        <a href="quiz.html">Shade Quiz</a>
         <a href="products.html">Products</a>
-        <a href="custom-blend.html">Custom Blend</a>
-        <a href="cart.html">My Cart</a>
         <a href="login.html">Login</a>
     </nav>
 </header>
 
 <main class="cart-container">
 
-    <div class="cart-heading">
-        <h1>My Shopping Cart</h1>
-        <p>Review your selected products.</p>
-    </div>
+    <h1 class="cart-heading">My Shopping Cart</h1>
 
-    <section class="cart-box">
-        <div id="cartItems"></div>
-        <div class="cart-total" id="cartTotal"></div>
-    </section>
+    <div id="cartItems"></div>
+
+    <div class="cart-summary" id="cartSummary" style="display:none">
+        <h2>Order Summary</h2>
+        <p>Subtotal: ₹<span id="subtotal">0</span></p>
+        <h2>Total: ₹<span id="total">0</span></h2>
+
+        <button class="checkout-button" onclick="goToCheckout()">
+            Proceed to Checkout
+        </button>
+    </div>
 
     <a href="products.html" class="back-link">
         ← Continue Shopping
@@ -137,101 +179,165 @@
 </main>
 
 <script>
-    function getCart() {
-        try {
-            const cart = JSON.parse(
-                localStorage.getItem("blendoraCart") || "[]"
-            );
-            return Array.isArray(cart) ? cart : [];
-        } catch {
-            return [];
-        }
+function getCart() {
+    try {
+        return JSON.parse(
+            localStorage.getItem("blendoraCart") || "[]"
+        );
+    } catch {
+        return [];
+    }
+}
+
+function saveCart(cart) {
+    localStorage.setItem(
+        "blendoraCart",
+        JSON.stringify(cart)
+    );
+}
+
+function getImage(product) {
+    if (product.image) {
+        return product.image;
     }
 
-    function displayCart() {
-        const cartItems = getCart();
-        const container = document.getElementById("cartItems");
-        const totalContainer = document.getElementById("cartTotal");
+    const category = String(product.category || "").toLowerCase();
 
-        container.innerHTML = "";
-        totalContainer.innerHTML = "";
-
-        if (cartItems.length === 0) {
-            container.innerHTML = `
-                <div class="empty-cart">
-                    <h2>Your cart is empty!</h2>
-                    <p>Explore our products and create your custom blend.</p>
-                    <a href="products.html" class="checkout-button">
-                        Explore Products
-                    </a>
-                </div>
-            `;
-            return;
-        }
-
-        let total = 0;
-        let allPricesValid = true;
-
-        cartItems.forEach((item, index) => {
-            const priceValue = Number(item.price);
-
-            if (item.price === "" || !Number.isFinite(priceValue) || priceValue < 0) {
-                allPricesValid = false;
-            } else {
-                total += priceValue;
-            }
-
-            const product = document.createElement("div");
-            product.className = "cart-item";
-
-            const image = document.createElement("img");
-            image.src = item.image || "images/foundation.jpg";
-            image.alt = item.name || "Makeup product";
-
-            const info = document.createElement("div");
-            info.className = "cart-info";
-
-            const heading = document.createElement("h3");
-            heading.textContent = item.name || "Makeup Product";
-
-            const price = document.createElement("p");
-            price.textContent = allPricesValid && item.price !== ""
-                ? "Price: ₹" + priceValue.toFixed(2)
-                : "Price: To be confirmed";
-
-            const remove = document.createElement("button");
-            remove.className = "remove-button";
-            remove.textContent = "Remove";
-            remove.addEventListener("click", () => removeItem(index));
-
-            info.appendChild(heading);
-            info.appendChild(price);
-            info.appendChild(remove);
-
-            product.appendChild(image);
-            product.appendChild(info);
-            container.appendChild(product);
-        });
-
-        totalContainer.innerHTML = allPricesValid
-            ? `<h2>Total: ₹${total.toFixed(2)}</h2>
-               <a href="checkout.html" class="checkout-button">
-                   Proceed to Checkout
-               </a>`
-            : `<p>Final product prices will be confirmed.</p>
-               <a href="checkout.html" class="checkout-button">
-                   Continue
-               </a>`;
+    if (category.includes("concealer")) {
+        return "images/concealer.jpg";
     }
 
-    function removeItem(index) {
-        const cartItems = getCart();
-        cartItems.splice(index, 1);
-        localStorage.setItem("blendoraCart", JSON.stringify(cartItems));
-        displayCart();
+    return "images/foundation.jpg";
+}
+
+function renderCart() {
+    const cart = getCart();
+    const cartItems = document.getElementById("cartItems");
+    const cartSummary = document.getElementById("cartSummary");
+
+    cartItems.innerHTML = "";
+
+    if (cart.length === 0) {
+        cartItems.innerHTML = `
+            <div class="empty-cart">
+                <h2>Your cart is empty</h2>
+                <p>Add your favourite Blendora products to continue.</p>
+                <a href="products.html" class="checkout-button">
+                    Explore Products
+                </a>
+            </div>
+        `;
+
+        cartSummary.style.display = "none";
+        return;
     }
 
-    displayCart();
+    cartSummary.style.display = "block";
+
+    let total = 0;
+
+    cart.forEach((product, index) => {
+        const quantity = Number(product.quantity || 1);
+        const price = Number(product.price || 0);
+        const itemTotal = price * quantity;
+
+        total += itemTotal;
+
+        const item = document.createElement("div");
+        item.className = "cart-item";
+
+        const image = document.createElement("img");
+        image.src = getImage(product);
+        image.alt = product.name || "Blendora product";
+
+        const info = document.createElement("div");
+
+        const name = document.createElement("h3");
+        name.textContent = product.name || "Blendora Product";
+
+        const shade = document.createElement("p");
+        shade.textContent = "Shade: " + (product.shade || "Various");
+
+        const unitPrice = document.createElement("p");
+        unitPrice.textContent = "Price: ₹" + price;
+
+        const quantityControls = document.createElement("div");
+        quantityControls.className = "quantity-controls";
+
+        const minusButton = document.createElement("button");
+        minusButton.textContent = "−";
+        minusButton.onclick = () => changeQuantity(index, -1);
+
+        const quantityText = document.createElement("span");
+        quantityText.textContent = quantity;
+
+        const plusButton = document.createElement("button");
+        plusButton.textContent = "+";
+        plusButton.onclick = () => changeQuantity(index, 1);
+
+        quantityControls.append(
+            minusButton,
+            quantityText,
+            plusButton
+        );
+
+        const removeButton = document.createElement("button");
+        removeButton.className = "remove-button";
+        removeButton.textContent = "Remove";
+        removeButton.onclick = () => removeProduct(index);
+
+        info.append(
+            name,
+            shade,
+            unitPrice,
+            quantityControls,
+            removeButton
+        );
+
+        const itemPrice = document.createElement("div");
+        itemPrice.className = "item-price";
+        itemPrice.textContent = "₹" + itemTotal;
+
+        item.append(image, info, itemPrice);
+        cartItems.appendChild(item);
+    });
+
+    document.getElementById("subtotal").textContent = total;
+    document.getElementById("total").textContent = total;
+}
+
+function changeQuantity(index, change) {
+    const cart = getCart();
+
+    if (!cart[index]) return;
+
+    const currentQuantity = Number(cart[index].quantity || 1);
+    const newQuantity = currentQuantity + change;
+
+    if (newQuantity <= 0) {
+        cart.splice(index, 1);
+    } else {
+        cart[index].quantity = newQuantity;
+    }
+
+    saveCart(cart);
+    renderCart();
+}
+
+function removeProduct(index) {
+    const cart = getCart();
+
+    cart.splice(index, 1);
+
+    saveCart(cart);
+    renderCart();
+}
+
+function goToCheckout() {
+    window.location.href = "checkout.html";
+}
+
+renderCart();
 </script>
 
 </body>

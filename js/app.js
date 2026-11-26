@@ -3,6 +3,9 @@
    BLENDORA - MAIN APPLICATION
 ================================= */
 
+// Backend URL
+const BACKEND_URL = "http://localhost:5000";
+
 // Run after the HTML page loads
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -13,9 +16,9 @@ document.addEventListener("DOMContentLoaded", function () {
         'a[href^="#"]'
     );
 
-    navigationLinks.forEach(function(link) {
+    navigationLinks.forEach(function (link) {
 
-        link.addEventListener("click", function(event) {
+        link.addEventListener("click", function (event) {
 
             const targetId = link.getAttribute("href");
 
@@ -24,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const targetElement = document.querySelector(targetId);
 
             if (targetElement) {
-
                 event.preventDefault();
 
                 targetElement.scrollIntoView({
@@ -48,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const savedProfile = localStorage.getItem("blendoraProfile");
 
     if (welcomeElement && savedProfile) {
-
         try {
             const profile = JSON.parse(savedProfile);
 
@@ -62,7 +63,32 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Test backend connection
+    testBackendConnection();
+
 });
+
+
+// Test Blendora backend connection
+async function testBackendConnection() {
+
+    try {
+        const response = await fetch(
+            `${BACKEND_URL}/api/health`
+        );
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            console.log("Blendora Backend Connected:", data.message);
+        } else {
+            console.error("Backend connection error:", data.message);
+        }
+
+    } catch (error) {
+        console.error("Backend connection failed:", error.message);
+    }
+}
 
 
 // Get current customer profile

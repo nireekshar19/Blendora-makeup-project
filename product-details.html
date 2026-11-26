@@ -2,174 +2,302 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details | Blendora</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        .details-container {
-            max-width: 1100px;
-            margin: 45px auto;
-            padding: 20px;
-        }
+<title>Product Details | Blendora</title>
+<link rel="stylesheet" href="css/style.css">
 
-        .details-heading {
-            text-align: center;
-            color: #8b4564;
-            margin-bottom: 35px;
-        }
+<style>
+.details-container {
+    max-width: 1100px;
+    margin: 45px auto;
+    padding: 20px;
+}
 
-        .details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 35px;
-        }
+.details-heading {
+    text-align: center;
+    color: #8b4564;
+    margin-bottom: 35px;
+}
 
-        .detail-card {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            padding-bottom: 25px;
-        }
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 35px;
+}
 
-        .detail-card img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-        }
+.detail-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    padding-bottom: 25px;
+}
 
-        .detail-content {
-            padding: 20px;
-        }
+.detail-card img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    background: #f8e9ed;
+}
 
-        .detail-content h2 {
-            color: #8b4564;
-        }
+.detail-content {
+    padding: 20px;
+}
 
-        .detail-content p {
-            color: #666;
-            line-height: 1.7;
-        }
+.detail-content h2 {
+    color: #8b4564;
+}
 
-        .detail-content ul {
-            color: #666;
-            line-height: 2;
-            padding-left: 20px;
-        }
+.detail-content p {
+    color: #666;
+    line-height: 1.7;
+}
 
-        .customize-button {
-            display: inline-block;
-            background: #a85d7c;
-            color: white;
-            padding: 12px 25px;
-            text-decoration: none;
-            border-radius: 25px;
-            margin-top: 12px;
-        }
+.product-price {
+    color: #8b4564;
+    font-size: 25px;
+    font-weight: bold;
+    margin: 18px 0;
+}
 
-        .customize-button:hover {
-            background: #82415e;
-        }
+.customize-button {
+    display: inline-block;
+    background: #a85d7c;
+    color: white;
+    padding: 12px 25px;
+    text-decoration: none;
+    border: none;
+    border-radius: 25px;
+    margin-top: 12px;
+    cursor: pointer;
+}
 
-        .back-link {
-            display: inline-block;
-            margin-top: 30px;
-            color: #8b4564;
-            text-decoration: none;
-        }
-    </style>
+.customize-button:hover {
+    background: #82415e;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 30px;
+    color: #8b4564;
+    text-decoration: none;
+}
+
+#statusMessage {
+    text-align: center;
+    color: #8b4564;
+    margin: 25px;
+}
+
+#cartMessage {
+    color: #34734a;
+    margin-top: 15px;
+}
+</style>
 </head>
 
 <body>
 
-    <header>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="quiz.html">Shade Quiz</a>
-            <a href="products.html">Products</a>
-            <a href="login.html">Login</a>
-        </nav>
-    </header>
+<header class="header">
 
-    <main class="details-container">
+    <a href="index.html" class="logo">
+        Blendora<span>.</span>
+    </a>
 
-        <div class="details-heading">
-            <h1>Discover Your Perfect Blend</h1>
-            <p>Explore our custom-blended makeup collection.</p>
-        </div>
+    <nav class="navbar">
+        <a href="index.html">Home</a>
+        <a href="quiz.html">Shade Quiz</a>
+        <a href="products.html">Products</a>
+        <a href="login.html">Login</a>
+    </nav>
 
-        <div class="details-grid">
+    <a href="cart.html" class="nav-button">
+        My Cart (<span id="cartCount">0</span>)
+    </a>
 
-            <!-- Foundation Details -->
-            <section class="detail-card">
+</header>
 
-                <img src="images/foundation.jpg"
-                     alt="Custom-blended foundation">
+<main class="details-container">
 
-                <div class="detail-content">
-                    <h2>Custom-Blended Foundation</h2>
+    <div class="details-heading">
+        <h1>Discover Your Perfect Blend</h1>
+        <p>Explore your personalised beauty product.</p>
+    </div>
 
-                    <p>
-                        A personalised foundation concept designed
-                        around your skin tone, undertone and preferred
-                        coverage.
-                    </p>
+    <p id="statusMessage">Loading product details...</p>
 
-                    <h3>Features</h3>
+    <div class="details-grid" id="detailsGrid"></div>
 
-                    <ul>
-                        <li>Personalised shade selection</li>
-                        <li>Multiple coverage preferences</li>
-                        <li>Skin profile-based recommendations</li>
-                        <li>Custom blend request option</li>
-                    </ul>
+    <p id="cartMessage" role="status"></p>
 
-                    <a href="quiz.html" class="customize-button">
-                        Customize Foundation
-                    </a>
-                </div>
+    <a href="products.html" class="back-link">
+        ← Back to Products
+    </a>
 
-            </section>
+</main>
 
-            <!-- Concealer Details -->
-            <section class="detail-card">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
 
-                <img src="images/concealer.jpg"
-                     alt="Custom-blended concealer">
+<script>
+const db = firebase.firestore();
 
-                <div class="detail-content">
-                    <h2>Custom-Blended Concealer</h2>
+const detailsGrid = document.getElementById("detailsGrid");
+const statusMessage = document.getElementById("statusMessage");
+const cartMessage = document.getElementById("cartMessage");
 
-                    <p>
-                        A personalised concealer concept based on
-                        your skin profile and desired coverage.
-                    </p>
+const params = new URLSearchParams(window.location.search);
+const productId = params.get("id");
 
-                    <h3>Features</h3>
+function getCart() {
+    try {
+        return JSON.parse(
+            localStorage.getItem("blendoraCart") || "[]"
+        );
+    } catch {
+        return [];
+    }
+}
 
-                    <ul>
-                        <li>Personalised shade selection</li>
-                        <li>Coverage preference selection</li>
-                        <li>Skin tone-based recommendations</li>
-                        <li>Custom blend request option</li>
-                    </ul>
+function updateCartCount() {
+    document.getElementById("cartCount").textContent =
+        getCart().length;
+}
 
-                    <a href="quiz.html" class="customize-button">
-                        Customize Concealer
-                    </a>
-                </div>
+function getProductImage(category) {
+    const type = String(category || "").toLowerCase();
 
-            </section>
+    if (type.includes("concealer")) {
+        return "images/concealer.jpg";
+    }
 
-        </div>
+    return "images/foundation.jpg";
+}
 
-        <a href="products.html" class="back-link">
-            ← Back to Products
-        </a>
+function addToCart(product) {
+    const cart = getCart();
 
-    </main>
+    cart.push({
+        id: product.id,
+        name: product.name,
+        price: Number(product.price || 0),
+        image: getProductImage(product.category),
+        shade: product.shade || "",
+        quantity: 1
+    });
+
+    localStorage.setItem(
+        "blendoraCart",
+        JSON.stringify(cart)
+    );
+
+    updateCartCount();
+
+    cartMessage.textContent =
+        product.name + " added to your cart!";
+}
+
+async function loadProductDetails() {
+    try {
+        if (!productId) {
+            statusMessage.textContent =
+                "Product ID is missing. Please return to Products.";
+            return;
+        }
+
+        const doc = await db
+            .collection("products")
+            .doc(productId)
+            .get();
+
+        if (!doc.exists) {
+            statusMessage.textContent =
+                "This product could not be found.";
+            return;
+        }
+
+        const product = doc.data();
+
+        detailsGrid.innerHTML = "";
+
+        const card = document.createElement("section");
+        card.className = "detail-card";
+
+        const image = document.createElement("img");
+        image.src = getProductImage(product.category);
+        image.alt = product.name || "Blendora product";
+
+        const content = document.createElement("div");
+        content.className = "detail-content";
+
+        const heading = document.createElement("h2");
+        heading.textContent = product.name || "Blendora Product";
+
+        const category = document.createElement("p");
+        category.textContent =
+            "Category: " + (product.category || "Makeup");
+
+        const description = document.createElement("p");
+        description.textContent =
+            product.description ||
+            "Discover your perfect beauty match.";
+
+        const shade = document.createElement("p");
+        shade.textContent =
+            "Shade: " + (product.shade || "Various");
+
+        const price = document.createElement("div");
+        price.className = "product-price";
+        price.textContent =
+            "₹" + Number(product.price || 0);
+
+        const vendor = document.createElement("p");
+        vendor.textContent =
+            "Sold by: " + (product.vendorName || "Blendora Vendor");
+
+        const addButton = document.createElement("button");
+        addButton.className = "customize-button";
+        addButton.textContent = "Add to Cart";
+
+        addButton.onclick = function() {
+            addToCart({
+                id: doc.id,
+                name: product.name || "Blendora Product",
+                price: product.price,
+                category: product.category,
+                shade: product.shade
+            });
+        };
+
+        content.append(
+            heading,
+            category,
+            description,
+            shade,
+            price,
+            vendor,
+            addButton
+        );
+
+        card.append(image, content);
+        detailsGrid.appendChild(card);
+
+        statusMessage.textContent = "";
+
+    } catch (error) {
+        console.error("Product details error:", error);
+
+        statusMessage.textContent =
+            "Unable to load product details. Please refresh.";
+    }
+}
+
+updateCartCount();
+loadProductDetails();
+</script>
 
 </body>
 </html>

@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blendora | Vendor Approval</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #fff5f8;
+            color: #38232c;
+        }
+
+        h1 {
+            color: #b83269;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        button {
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .refresh {
+            background: #b83269;
+            color: white;
+        }
+
+        .vendor-card {
+            background: white;
+            padding: 20px;
+            margin: 18px 0;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #ead5df;
+        }
+
+        .vendor-card p {
+            margin: 8px 0;
+        }
+
+        .approve {
+            background: #238b57;
+            color: white;
+            margin-right: 8px;
+        }
+
+        .reject {
+            background: #d94343;
+            color: white;
+        }
+
+        #message {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top">
+        <div>
+            <h1>Vendor Applications</h1>
+            <p>Review and approve Blendora vendors.</p>
+        </div>
+
+        <button class="refresh" onclick="loadVendors()">
+            Refresh
+        </button>
+    </div>
+
+    <div id="message">Loading vendor applications...</div>
+    <div id="vendorList"></div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Configuration -->
+    <script src="../js/firebase-config.js"></script>
+
+    <script>
+        const BACKEND_URL = "http://localhost:5000";
+
+        const message = document.getElementById("message");
+        const vendorList = document.getElementById("vendorList");
+
+        async function getToken() {
+            const user = firebase.auth().currentUser;
+
+            if (!user) {
+                throw new Error("Please login first.");
+            }
+
+            return await user.getIdToken();
+        }
+
+        async function loadVendors() {
+            try {
+                message.textContent = "Loading vendors...";
+                vendorList.innerHTML = "";
+
+                const token = await getToken();
+
+                const response = await fetch(
+                    `${BACKEND_URL}/api/admin/vendors`,
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.message || "Unable to load vendors"
+                    );
+                }
+
+                if (!result.vendors || result.vendors.length === 0) {
+                    message.textContent =
+                        "No pending vendor applications.";
+                    return;
+                }
+
+                message.textContent =
+                    `${result.vendors.length} pending vendor application(s)`;
+
+                result.vendors.forEach(vendor => {
+                    const card = document.createElement("div");
+                    card.className = "vendor-card";
+
+                    const name = document.createElement("h3");
+                    name.textContent = vendor.name || "Vendor";
+
+                    const email = document.createElement("p");
+                    email.textContent =
+                        "Email: " + (vendor.email || "Not provided");
+
+                    const status = document.createElement("p");
+                    status.textContent = "Status: " + vendor.status;
+
+                    const approveButton = document.createElement("button");
+                    approveButton.className = "approve";
+                    approveButton.textContent = "Approve";
+
+                    approveButton.onclick = () => {
+                        updateVendor(vendor.uid, "approved");
+                    };
+
+                    const rejectButton = document.createElement("button");
+                    rejectButton.className = "reject";
+                    rejectButton.textContent = "Reject";
+
+                    rejectButton.onclick = () => {
+                        updateVendor(vendor.uid, "rejected");
+                    };
+
+                    card.appendChild(name);
+                    card.appendChild(email);
+                    card.appendChild(status);
+                    card.appendChild(approveButton);
+                    card.appendChild(rejectButton);
+
+                    vendorList.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error("Load vendors error:", error);
+                message.textContent = error.message;
+            }
+        }
+
+        async function updateVendor(uid, status) {
+            try {
+                const token = await getToken();
+
+                const response = await fetch(
+                    `${BACKEND_URL}/api/admin/vendors/${uid}/status`,
+                    {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ status })
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.message || "Unable to update vendor"
+                    );
+                }
+
+                alert(`Vendor ${status} successfully!`);
+
+                await loadVendors();
+
+            } catch (error) {
+                console.error("Update vendor error:", error);
+                alert(error.message);
+            }
+        }
+
+        firebase.auth().onAuthStateChanged(user => {
+            if (!user) {
+                message.textContent =
+                    "Please login with your Super Admin account.";
+                return;
+            }
+
+            loadVendors();
+        });
+    </script>
+
+</body>
+</html>

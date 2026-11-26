@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendor Orders | Blendora</title>
+<link rel="stylesheet" href="../css/style.css">
+
+<style>
+body{background:#fff8fb;font-family:Arial,sans-serif;padding:25px}
+.container{max-width:1000px;margin:auto}
+.order-card{background:white;padding:22px;margin:18px 0;border-radius:14px;box-shadow:0 3px 12px #eadde4}
+h1,h3{color:#82415e}
+button,select{padding:11px;border-radius:7px;border:1px solid #ddd;margin-top:10px}
+button{background:#a85d7c;color:white;border:none;cursor:pointer}
+button:disabled{opacity:.6}
+.status{font-weight:bold;color:#a85d7c}
+.empty{text-align:center;padding:40px;color:#777}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>My Customer Orders</h1>
+<p>View and manage orders for your products.</p>
+
+<button onclick="loadOrders()">Refresh Orders</button>
+<p id="message"></p>
+<div id="ordersList">Loading orders...</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+
+<script>
+const API = "http://localhost:5000";
+const auth = firebase.auth();
+
+const ordersList = document.getElementById("ordersList");
+const message = document.getElementById("message");
+
+let currentUser = null;
+
+auth.onAuthStateChanged(user => {
+    if (!user) {
+        ordersList.textContent = "Please login with your vendor account.";
+        return;
+    }
+
+    currentUser = user;
+    loadOrders();
+});
+
+async function loadOrders() {
+    if (!currentUser) return;
+
+    ordersList.textContent = "Loading orders...";
+    message.textContent = "";
+
+    try {
+        const token = await currentUser.getIdToken();
+
+        const response = await fetch(API + "/api/vendor/orders", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Could not load orders");
+        }
+
+        if (!result.orders || result.orders.length === 0) {
+            ordersList.innerHTML = `
+                <div class="empty">
+                    <h3>No orders yet</h3>
+                    <p>Customer orders will appear here.</p>
+                </div>
+            `;
+            return;
+        }
+
+        ordersList.innerHTML = "";
+
+        result.orders.forEach(order => {
+            const card = document.createElement("div");
+            card.className = "order-card";
+
+            const products = (order.items || []).map(item =>
+                `<li>${escapeHTML(item.name)} × ${Number(item.quantity || 1)}
+                — ₹${Number(item.itemTotal || 0).toFixed(2)}</li>`
+            ).join("");
+
+            card.innerHTML = `
+                <h3>Order #${escapeHTML(order.id)}</h3>
+                <p><strong>Customer:</strong> ${escapeHTML(order.customerName || "Customer")}</p>
+                <p><strong>Phone:</strong> ${escapeHTML(order.customerPhone || "")}</p>
+                <p><strong>Delivery:</strong> ${escapeHTML(
+                    (order.delivery?.address || "") + ", " +
+                    (order.delivery?.city || "") + " - " +
+                    (order.delivery?.pincode || "")
+                )}</p>
+
+                <h4>Products</h4>
+                <ul>${products}</ul>
+
+                <p><strong>Total:</strong> ₹${Number(order.total || 0).toFixed(2)}</p>
+                <p><strong>Status:</strong>
+                    <span class="status">${escapeHTML(order.status || "Pending")}</span>
+                </p>
+
+                <label>Update status:</label><br>
+                <select id="status-${order.id}">
+                    <option value="Processing">Processing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Delivered">Delivered</option>
+                </select>
+                <br>
+                <button onclick="updateStatus('${order.id}')">Update Status</button>
+            `;
+
+            ordersList.appendChild(card);
+
+            const select = card.querySelector("select");
+            select.value = order.status === "Pending"
+                ? "Processing"
+                : order.status;
+        });
+
+    } catch (error) {
+        console.error(error);
+        ordersList.textContent = error.message;
+    }
+}
+
+async function updateStatus(orderId) {
+    const select = document.getElementById("status-" + orderId);
+    const newStatus = select.value;
+
+    try {
+        const token = await currentUser.getIdToken();
+
+        const response = await fetch(
+            API + "/api/vendor/orders/" + orderId + "/status",
+            {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({ status: newStatus })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Status update failed");
+        }
+
+        message.textContent = "Order status updated!";
+        loadOrders();
+
+    } catch (error) {
+        message.textContent = error.message;
+    }
+}
+
+function escapeHTML(value) {
+    return String(value || "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+    }[char]));
+}
+</script>
+
+</body>
+</html>

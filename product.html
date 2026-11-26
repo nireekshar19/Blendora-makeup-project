@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Products | Blendora</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+.products-page {
+    max-width: 1100px;
+    margin: auto;
+    padding: 45px 20px;
+}
+
+.products-heading {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.products-heading h1 {
+    color: #82415e;
+    font-size: 34px;
+}
+
+.products-heading p {
+    color: #777;
+    margin-top: 10px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.product-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+    text-align: center;
+    padding-bottom: 25px;
+}
+
+.product-image {
+    width: 100%;
+    height: 260px;
+    object-fit: cover;
+    background: #f8e9ed;
+}
+
+.product-card h2 {
+    color: #82415e;
+    margin: 18px 10px 8px;
+}
+
+.product-card p {
+    color: #666;
+    padding: 0 18px;
+    line-height: 1.6;
+}
+
+.product-price {
+    color: #82415e;
+    font-size: 21px;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.product-button {
+    display: inline-block;
+    background: #a85d7c;
+    color: white;
+    border: none;
+    padding: 11px 25px;
+    border-radius: 25px;
+    margin: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.product-button:hover {
+    background: #82415e;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 35px;
+    color: #82415e;
+    text-decoration: none;
+}
+
+#cartMessage,
+#apiStatus {
+    text-align: center;
+    margin: 20px;
+    color: #82415e;
+}
+
+#cartMessage {
+    color: #34734a;
+}
+
+.product-category {
+    font-size: 13px;
+    color: #a85d7c;
+    margin-top: 15px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <a href="index.html" class="logo">
+        Blendora<span>.</span>
+    </a>
+
+    <nav class="navbar">
+        <a href="index.html">Home</a>
+        <a href="quiz.html">Shade Quiz</a>
+        <a href="product.html">Products</a>
+        <a href="login.html">Login</a>
+    </nav>
+
+    <a href="cart.html" class="nav-button">
+        My Cart (<span id="cartCount">0</span>)
+    </a>
+
+</header>
+
+<main class="products-page">
+
+    <div class="products-heading">
+        <h1>Explore Our Products</h1>
+        <p>Beauty that blends perfectly with your skin.</p>
+    </div>
+
+    <p id="apiStatus">Loading products...</p>
+
+    <div class="product-grid" id="productGrid"></div>
+
+    <p id="cartMessage" role="status"></p>
+
+    <a href="index.html" class="back-link">
+        ← Back to Home
+    </a>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+
+<script>
+
+const db = firebase.firestore();
+
+const grid = document.getElementById("productGrid");
+const status = document.getElementById("apiStatus");
+const cartMessage = document.getElementById("cartMessage");
+
+function getCart() {
+    try {
+        return JSON.parse(
+            localStorage.getItem("blendoraCart") || "[]"
+        );
+    } catch (error) {
+        return [];
+    }
+}
+
+function updateCartCount() {
+    document.getElementById("cartCount").textContent =
+        getCart().length;
+}
+
+function getProductImage(category) {
+    const categoryName = String(category || "").toLowerCase();
+
+    if (categoryName.includes("foundation")) {
+        return "images/foundation.jpg";
+    }
+
+    if (categoryName.includes("concealer")) {
+        return "images/concealer.jpg";
+    }
+
+    return "images/foundation.jpg";
+}
+
+function addToCart(product) {
+    const cart = getCart();
+
+    cart.push({
+        id: product.id,
+        name: product.name,
+        price: Number(product.price),
+        image: getProductImage(product.category),
+        shade: product.shade || "",
+        quantity: 1
+    });
+
+    localStorage.setItem(
+        "blendoraCart",
+        JSON.stringify(cart)
+    );
+
+    updateCartCount();
+
+    cartMessage.textContent =
+        product.name + " added to your cart!";
+}
+
+function createProductCard(doc) {
+
+    const product = doc.data();
+    const productId = doc.id;
+
+    const card = document.createElement("div");
+    card.className = "product-card";
+
+    const image = document.createElement("img");
+    image.className = "product-image";
+    image.src = getProductImage(product.category);
+    image.alt = product.name || "Blendora makeup product";
+
+    image.onerror = function() {
+        this.onerror = null;
+        this.src = "images/foundation.jpg";
+    };
+
+    const category = document.createElement("p");
+    category.className = "product-category";
+    category.textContent = product.category || "Makeup";
+
+    const heading = document.createElement("h2");
+    heading.textContent = product.name || "Blendora Product";
+
+    const description = document.createElement("p");
+    description.textContent =
+        product.description ||
+        "Discover your perfect beauty match.";
+
+    const shade = document.createElement("p");
+    shade.textContent =
+        "Shade: " + (product.shade || "Various");
+
+    const price = document.createElement("div");
+    price.className = "product-price";
+    price.textContent = "₹" + Number(product.price || 0);
+
+    const detailsLink = document.createElement("a");
+    detailsLink.href =
+        "product-details.html?id=" +
+        encodeURIComponent(productId);
+
+    detailsLink.className = "product-button";
+    detailsLink.textContent = "View Details";
+
+    const cartButton = document.createElement("button");
+    cartButton.className = "product-button";
+    cartButton.textContent = "Add to Cart";
+
+    cartButton.onclick = function() {
+        addToCart({
+            id: productId,
+            name: product.name || "Blendora Product",
+            price: product.price,
+            category: product.category,
+            shade: product.shade
+        });
+    };
+
+    card.append(
+        image,
+        category,
+        heading,
+        description,
+        shade,
+        price,
+        detailsLink,
+        cartButton
+    );
+
+    return card;
+}
+
+async function loadProducts() {
+
+    try {
+
+        status.textContent = "Loading products...";
+        grid.innerHTML = "";
+
+        const snapshot =
+            await db.collection("products").get();
+
+        if (snapshot.empty) {
+            status.textContent =
+                "No products available yet.";
+            return;
+        }
+
+        snapshot.forEach(function(doc) {
+            grid.appendChild(createProductCard(doc));
+        });
+
+        status.textContent =
+            "Explore products from Blendora vendors.";
+
+    } catch (error) {
+
+        console.error("Product loading error:", error);
+
+        status.textContent =
+            "Unable to load products. Please refresh.";
+    }
+}
+
+updateCartCount();
+loadProducts();
+
+</script>
+
+</body>
+</html>

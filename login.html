@@ -61,15 +61,19 @@
             color: #704052;
         }
 
-        .auth-card input {
+        .auth-card input,
+        .auth-card select {
             width: 100%;
             padding: 14px;
             border: 1px solid #e3d4cc;
             border-radius: 9px;
             font-size: 15px;
+            box-sizing: border-box;
+            background: white;
         }
 
-        .auth-card input:focus {
+        .auth-card input:focus,
+        .auth-card select:focus {
             outline: 2px solid #d9a7ba;
             border-color: #82415e;
         }
@@ -88,6 +92,11 @@
 
         .auth-button:hover {
             background: #a85d7c;
+        }
+
+        .auth-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
         }
 
         .auth-switch {
@@ -114,7 +123,6 @@
             text-align: center;
             margin-top: 15px;
             font-size: 14px;
-            color: #82415e;
         }
 
         .hidden {
@@ -145,19 +153,41 @@
         <form id="authForm">
 
             <div id="nameGroup" class="hidden">
+
                 <label for="fullName">Full Name</label>
-                <input type="text" id="fullName"
-                       placeholder="Enter your full name">
+                <input
+                    type="text"
+                    id="fullName"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                >
+
+                <label for="accountRole">Account Type</label>
+                <select id="accountRole">
+                    <option value="customer">Customer</option>
+                    <option value="vendor">Vendor</option>
+                </select>
+
             </div>
 
             <label for="email">Email Address</label>
-            <input type="email" id="email"
-                   placeholder="Enter your email" required>
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+                required
+            >
 
             <label for="password">Password</label>
-            <input type="password" id="password"
-                   placeholder="Enter your password"
-                   minlength="6" required>
+            <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                minlength="6"
+                autocomplete="current-password"
+                required
+            >
 
             <button type="submit" class="auth-button" id="submitButton">
                 Login
@@ -179,12 +209,25 @@
     </div>
 </div>
 
+<!-- Firebase Compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<!-- Firebase Configuration -->
+<script src="js/firebase-config.js"></script>
+
 <script>
+    const BACKEND_URL = "http://localhost:5000";
+
     const authForm = document.getElementById("authForm");
     const formTitle = document.getElementById("formTitle");
     const formSubtitle = document.getElementById("formSubtitle");
     const nameGroup = document.getElementById("nameGroup");
     const fullName = document.getElementById("fullName");
+    const accountRole = document.getElementById("accountRole");
+    const email = document.getElementById("email");
+    const password = document.getElementById("password");
     const submitButton = document.getElementById("submitButton");
     const switchText = document.getElementById("switchText");
     const switchLink = document.getElementById("switchLink");
@@ -192,11 +235,19 @@
 
     let isSignup = false;
 
+    const auth = window.blendoraAuth;
+
+    function showMessage(text, isError = false) {
+        message.textContent = text;
+        message.style.color = isError ? "#c0392b" : "#82415e";
+    }
+
+    // Switch between Login and Signup
     switchLink.addEventListener("click", function(event) {
         event.preventDefault();
 
         isSignup = !isSignup;
-        message.textContent = "";
+        showMessage("");
 
         if (isSignup) {
             formTitle.textContent = "Create Account";
@@ -206,9 +257,12 @@
             nameGroup.classList.remove("hidden");
             fullName.required = true;
 
+            password.autocomplete = "new-password";
+
             submitButton.textContent = "Create Account";
             switchText.textContent = "Already have an account?";
             switchLink.textContent = "Login";
+
         } else {
             formTitle.textContent = "Welcome Back!";
             formSubtitle.textContent =
@@ -217,17 +271,163 @@
             nameGroup.classList.add("hidden");
             fullName.required = false;
 
+            password.autocomplete = "current-password";
+
             submitButton.textContent = "Login";
             switchText.textContent = "Don't have an account?";
             switchLink.textContent = "Sign Up";
         }
     });
 
-    authForm.addEventListener("submit", function(event) {
+    // Firebase error messages
+    function getErrorMessage(error) {
+        switch (error.code) {
+            case "auth/email-already-in-use":
+                return "This email is already registered. Please login.";
+
+            case "auth/invalid-email":
+                return "Please enter a valid email address.";
+
+            case "auth/weak-password":
+                return "Password must contain at least 6 characters.";
+
+            case "auth/user-not-found":
+            case "auth/invalid-credential":
+            case "auth/wrong-password":
+                return "Incorrect email or password.";
+
+            case "auth/too-many-requests":
+                return "Too many attempts. Please try again later.";
+
+            case "auth/network-request-failed":
+                return "Network error. Please check your internet connection.";
+
+            case "auth/operation-not-allowed":
+                return "Email/Password sign-in is not enabled in Firebase.";
+
+            default:
+                console.error("Authentication error:", error);
+                return error.message || "Something went wrong. Please try again.";
+        }
+    }
+
+    // Connect signup to backend
+    async function registerAccount(userCredential, userName) {
+
+        const token = await userCredential.user.getIdToken();
+
+        const response = await fetch(
+            `${BACKEND_URL}/api/account/register-role`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name: userName,
+                    role: accountRole.value
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Profile creation failed.");
+        }
+
+        return result;
+    }
+
+    // Login and Signup
+    authForm.addEventListener("submit", async function(event) {
         event.preventDefault();
 
-        message.textContent =
-            "Authentication is not connected yet. Firebase setup is required.";
+        if (!auth) {
+            showMessage(
+                "Firebase is not connected. Please check your configuration.",
+                true
+            );
+            return;
+        }
+
+        const userEmail = email.value.trim();
+        const userPassword = password.value;
+        const userName = fullName.value.trim();
+
+        if (isSignup && !userName) {
+            showMessage("Please enter your full name.", true);
+            return;
+        }
+
+        submitButton.disabled = true;
+
+        submitButton.textContent = isSignup
+            ? "Creating Account..."
+            : "Logging In...";
+
+        showMessage("");
+
+        try {
+
+            if (isSignup) {
+
+                // Create Firebase account
+                const userCredential =
+                    await auth.createUserWithEmailAndPassword(
+                        userEmail,
+                        userPassword
+                    );
+
+                // Save name in Firebase Authentication
+                await userCredential.user.updateProfile({
+                    displayName: userName
+                });
+
+                // Save customer/vendor profile through backend
+                const result = await registerAccount(
+                    userCredential,
+                    userName
+                );
+
+                showMessage(
+                    result.role === "vendor"
+                        ? "Vendor account created! Waiting for Super Admin approval."
+                        : "Customer account created successfully! Redirecting..."
+                );
+
+            } else {
+
+                // Login existing account
+                await auth.signInWithEmailAndPassword(
+                    userEmail,
+                    userPassword
+                );
+
+                showMessage("Login successful! Welcome to Blendora.");
+            }
+
+            // Redirect after successful authentication
+            setTimeout(function() {
+                window.location.href = "index.html";
+            }, 1500);
+
+        } catch (error) {
+
+            console.error("Account error:", error);
+
+            showMessage(
+                error.code ? getErrorMessage(error) : error.message,
+                true
+            );
+
+            submitButton.disabled = false;
+
+            submitButton.textContent = isSignup
+                ? "Create Account"
+                : "Login";
+        }
     });
 </script>
 

@@ -1,0 +1,307 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendor Dashboard | Blendora</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#fff5f8;color:#61364a}
+header{background:white;padding:20px 7%;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px #00000010}
+.logo{font-size:27px;font-weight:bold;color:#82415e}
+button{border:none;border-radius:8px;padding:11px 18px;background:#82415e;color:white;cursor:pointer;margin:4px}
+main{max-width:1100px;margin:35px auto;padding:20px}
+.welcome{margin-bottom:25px}
+.status,.panel,.card{background:white;padding:22px;border-radius:14px;margin-bottom:22px;box-shadow:0 4px 14px #00000008}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-bottom:25px}
+.card h3{margin-bottom:10px}
+.card p{color:#88766e}
+.panel h2{margin-bottom:18px}
+input,select{width:100%;padding:12px;margin:8px 0 15px;border:1px solid #e5cbd6;border-radius:8px;font-size:15px}
+label{font-weight:bold;font-size:14px}
+.primary{background:#82415e}
+.delete{background:#c43d52}
+.edit{background:#a36b85}
+.product{padding:17px;border:1px solid #f0dce4;border-radius:10px;margin:12px 0}
+.product h3{margin-bottom:10px}
+#message{margin:15px 0;font-weight:bold}
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">Blendora.</div>
+<button id="logoutButton">Logout</button>
+</header>
+
+<main>
+
+<section class="welcome">
+<h1>Vendor Dashboard</h1>
+<p>Manage your store and products with Blendora.</p>
+</section>
+
+<div class="status" id="vendorStatus">Checking your account...</div>
+
+<div class="cards">
+<div class="card">
+<h3>My Products</h3>
+<p id="productCount">0 products</p>
+</div>
+<div class="card">
+<h3>My Orders</h3>
+<p>Order management coming next.</p>
+</div>
+<div class="card">
+<h3>My Earnings</h3>
+<p>Sales tracking coming next.</p>
+</div>
+</div>
+
+<section class="panel hidden" id="productSection">
+<h2 id="formTitle">Add New Product</h2>
+
+<form id="productForm">
+<label>Product Name</label>
+<input id="productName" required placeholder="Example: Matte Foundation">
+
+<label>Category</label>
+<select id="category" required>
+<option value="">Select Category</option>
+<option>Foundation</option>
+<option>Concealer</option>
+<option>Lipstick</option>
+<option>Compact Powder</option>
+<option>Blush</option>
+<option>Other</option>
+</select>
+
+<label>Price (₹)</label>
+<input id="price" type="number" min="1" required placeholder="Enter price">
+
+<label>Available Shade</label>
+<input id="shade" required placeholder="Example: Warm Beige">
+
+<label>Product Description</label>
+<input id="description" placeholder="Enter product details">
+
+<button type="submit" class="primary" id="saveButton">Add Product</button>
+<button type="button" id="cancelEdit" class="edit hidden">Cancel Edit</button>
+</form>
+</section>
+
+<section class="panel hidden" id="productsSection">
+<h2>My Products</h2>
+<div id="productsList">Loading products...</div>
+</section>
+
+<p id="message"></p>
+
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
+
+<script>
+const statusBox = document.getElementById("vendorStatus");
+const message = document.getElementById("message");
+const productSection = document.getElementById("productSection");
+const productsSection = document.getElementById("productsSection");
+const productsList = document.getElementById("productsList");
+
+let currentUser = null;
+let editingId = null;
+
+const db = firebase.firestore();
+
+function showMessage(text) {
+    message.textContent = text;
+}
+
+function resetForm() {
+    document.getElementById("productForm").reset();
+    editingId = null;
+    document.getElementById("formTitle").textContent = "Add New Product";
+    document.getElementById("saveButton").textContent = "Add Product";
+    document.getElementById("cancelEdit").classList.add("hidden");
+}
+
+async function loadProducts() {
+    try {
+        const snapshot = await db.collection("products")
+            .where("vendorUid", "==", currentUser.uid)
+            .get();
+
+        productsList.innerHTML = "";
+
+        document.getElementById("productCount").textContent =
+            snapshot.size + " products";
+
+        if (snapshot.empty) {
+            productsList.textContent = "No products added yet.";
+            return;
+        }
+
+        snapshot.forEach(doc => {
+            const product = doc.data();
+
+            const card = document.createElement("div");
+            card.className = "product";
+
+            const title = document.createElement("h3");
+            title.textContent = product.name;
+
+            const details = document.createElement("p");
+            details.textContent =
+                product.category + " | ₹" + product.price +
+                " | Shade: " + product.shade;
+
+            const description = document.createElement("p");
+            description.textContent = product.description || "";
+
+            const editButton = document.createElement("button");
+            editButton.className = "edit";
+            editButton.textContent = "Edit";
+            editButton.onclick = () => editProduct(doc.id, product);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.className = "delete";
+            deleteButton.textContent = "Delete";
+            deleteButton.onclick = () => deleteProduct(doc.id);
+
+            card.append(title, details, description, editButton, deleteButton);
+            productsList.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error(error);
+        showMessage("Could not load products: " + error.message);
+    }
+}
+
+document.getElementById("productForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const product = {
+        name: document.getElementById("productName").value.trim(),
+        category: document.getElementById("category").value,
+        price: Number(document.getElementById("price").value),
+        shade: document.getElementById("shade").value.trim(),
+        description: document.getElementById("description").value.trim(),
+        vendorUid: currentUser.uid,
+        vendorName: currentUser.displayName || "Vendor",
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    try {
+        const button = document.getElementById("saveButton");
+        button.disabled = true;
+
+        if (editingId) {
+            await db.collection("products").doc(editingId).update(product);
+            showMessage("Product updated successfully!");
+        } else {
+            product.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection("products").add(product);
+            showMessage("Product added successfully!");
+        }
+
+        resetForm();
+        await loadProducts();
+        button.disabled = false;
+
+    } catch (error) {
+        console.error(error);
+        showMessage("Unable to save product: " + error.message);
+        document.getElementById("saveButton").disabled = false;
+    }
+});
+
+function editProduct(id, product) {
+    editingId = id;
+
+    document.getElementById("productName").value = product.name;
+    document.getElementById("category").value = product.category;
+    document.getElementById("price").value = product.price;
+    document.getElementById("shade").value = product.shade;
+    document.getElementById("description").value = product.description || "";
+
+    document.getElementById("formTitle").textContent = "Edit Product";
+    document.getElementById("saveButton").textContent = "Update Product";
+    document.getElementById("cancelEdit").classList.remove("hidden");
+
+    window.scrollTo({top: 0, behavior: "smooth"});
+}
+
+async function deleteProduct(id) {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+
+    try {
+        await db.collection("products").doc(id).delete();
+        showMessage("Product deleted successfully!");
+        await loadProducts();
+    } catch (error) {
+        showMessage("Unable to delete product: " + error.message);
+    }
+}
+
+document.getElementById("cancelEdit").onclick = resetForm;
+
+window.blendoraAuth.onAuthStateChanged(async function(user) {
+    if (!user) {
+        window.location.href = "../login.html";
+        return;
+    }
+
+    currentUser = user;
+
+    try {
+        const token = await user.getIdToken();
+
+        const response = await fetch("http://localhost:5000/api/account/profile", {
+            headers: {"Authorization": "Bearer " + token}
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) throw new Error(result.message);
+
+        const profile = result.profile;
+
+        if (profile.role !== "vendor") {
+            statusBox.textContent = "This dashboard is only for vendors.";
+            return;
+        }
+
+        if (profile.status !== "approved") {
+            statusBox.textContent = "Your vendor account is awaiting approval.";
+            return;
+        }
+
+        statusBox.textContent = "Welcome, " + profile.name + "! Your store is approved.";
+
+        productSection.classList.remove("hidden");
+        productsSection.classList.remove("hidden");
+
+        await loadProducts();
+
+    } catch (error) {
+        console.error(error);
+        statusBox.textContent = "Could not verify your vendor account.";
+    }
+});
+
+document.getElementById("logoutButton").onclick = async function() {
+    await window.blendoraAuth.signOut();
+    window.location.href = "../login.html";
+};
+</script>
+
+</body>
+</html>

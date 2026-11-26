@@ -1,36 +1,33 @@
 
-/* BLENDORA - FIREBASE CONFIGURATION */
-
-/*
-  Replace the placeholder values with your Firebase
-  project's actual configuration.
-
-  Add Firebase compat SDK scripts before this file
-  in the HTML pages that use Firebase.
-*/
+/* =====================================
+   BLENDORA - FIREBASE CONFIGURATION
+===================================== */
 
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyAzFguY77XumlEnJPAHso4D-4fyfCRrnzU",
+    authDomain: "blendora-makeup.firebaseapp.com",
+    projectId: "blendora-makeup",
+    storageBucket: "blendora-makeup.firebasestorage.app",
+    messagingSenderId: "908659870142",
+    appId: "1:908659870142:web:3cc73ec7ab0316c97111ef",
+    measurementId: "G-E9J4KRXNHB"
 };
 
+// Initialize Firebase
 if (typeof firebase !== "undefined") {
 
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
 
+    // Firebase Authentication
     window.blendoraAuth = firebase.auth();
+
+    // Firebase Firestore
     window.blendoraDatabase = firebase.firestore();
 
-    console.log("Blendora Firebase initialized.");
+    console.log("Blendora Firebase initialized successfully!");
 
 } else {
-    console.warn(
-        "Firebase SDK not loaded. Firebase features are unavailable."
-    );
+    console.error("Firebase SDK not loaded. Check Firebase scripts.");
 }

@@ -2,268 +2,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout | Blendora</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout | Blendora</title>
+<link rel="stylesheet" href="css/style.css">
 
-    <style>
-        .checkout-container {
-            max-width: 850px;
-            margin: 40px auto;
-            padding: 20px;
-        }
-
-        .checkout-heading {
-            text-align: center;
-            color: #8b4564;
-            margin-bottom: 30px;
-        }
-
-        .checkout-box {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        }
-
-        .checkout-box h2 {
-            color: #8b4564;
-            margin-top: 25px;
-        }
-
-        .checkout-box label {
-            display: block;
-            margin: 15px 0 7px;
-            color: #704052;
-            font-weight: bold;
-        }
-
-        .checkout-box input,
-        .checkout-box textarea,
-        .checkout-box select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 15px;
-        }
-
-        .checkout-box textarea {
-            min-height: 90px;
-            resize: vertical;
-        }
-
-        .order-summary {
-            background: #fff5f8;
-            padding: 18px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        .submit-button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 25px;
-            background: #a85d7c;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .submit-button:hover {
-            background: #82415e;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 25px;
-            color: #8b4564;
-            text-decoration: none;
-        }
-
-        .message {
-            text-align: center;
-            color: #34734a;
-            margin-top: 20px;
-        }
-    </style>
+<style>
+.checkout-container{max-width:1000px;margin:40px auto;padding:20px}
+.checkout-title{text-align:center;color:#82415e;margin-bottom:30px}
+.checkout-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:30px}
+.checkout-card{background:white;padding:25px;border-radius:15px;box-shadow:0 4px 15px rgba(0,0,0,.08)}
+.checkout-card h2{color:#82415e;margin-bottom:20px}
+.checkout-form label{display:block;color:#666;margin:15px 0 7px}
+.checkout-form input,.checkout-form textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:15px;box-sizing:border-box}
+.checkout-form textarea{height:90px;resize:vertical}
+.checkout-button{width:100%;background:#a85d7c;color:white;border:none;padding:14px;border-radius:25px;margin-top:20px;cursor:pointer;font-size:16px}
+.checkout-button:disabled{opacity:.6;cursor:not-allowed}
+.order-row{display:flex;justify-content:space-between;gap:15px;margin:15px 0;color:#666}
+.order-total{font-size:21px;font-weight:bold;color:#82415e;border-top:1px solid #eee;padding-top:15px}
+#message{text-align:center;color:#82415e;margin:20px;overflow-wrap:anywhere}
+.back-link{display:inline-block;margin-top:25px;color:#82415e;text-decoration:none}
+@media(max-width:700px){.checkout-grid{grid-template-columns:1fr}}
+</style>
 </head>
 
 <body>
 
-<header>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="products.html">Products</a>
-        <a href="cart.html">My Cart</a>
-        <a href="login.html">Login</a>
-    </nav>
+<header class="header">
+<a href="index.html" class="logo">Blendora<span>.</span></a>
+<nav class="navbar">
+<a href="index.html">Home</a>
+<a href="products.html">Products</a>
+<a href="cart.html">My Cart</a>
+</nav>
 </header>
 
 <main class="checkout-container">
 
-    <div class="checkout-heading">
-        <h1>Checkout</h1>
-        <p>Enter your details to place your order.</p>
-    </div>
+<h1 class="checkout-title">Checkout</h1>
 
-    <form class="checkout-box" id="checkoutForm">
+<div class="checkout-grid">
 
-        <h2>Customer Information</h2>
+<section class="checkout-card">
+<h2>Delivery Details</h2>
 
-        <label for="customerName">Full Name</label>
-        <input type="text" id="customerName"
-               placeholder="Enter your full name" required>
+<form id="checkoutForm" class="checkout-form">
 
-        <label for="email">Email Address</label>
-        <input type="email" id="email"
-               placeholder="Enter your email" required>
+<label for="customerName">Full Name</label>
+<input id="customerName" required>
 
-        <label for="phone">Mobile Number</label>
-        <input type="tel" id="phone"
-               placeholder="Enter 10-digit mobile number"
-               pattern="[0-9]{10}" maxlength="10" required>
+<label for="customerEmail">Email Address</label>
+<input id="customerEmail" type="email" required>
 
-        <h2>Delivery Address</h2>
+<label for="customerPhone">Phone Number</label>
+<input id="customerPhone" type="tel" required>
 
-        <label for="address">Full Address</label>
-        <textarea id="address"
-                  placeholder="House number, street, area"
-                  required></textarea>
+<label for="customerAddress">Delivery Address</label>
+<textarea id="customerAddress" required></textarea>
 
-        <label for="city">City</label>
-        <input type="text" id="city"
-               placeholder="Enter your city" required>
+<label for="customerCity">City</label>
+<input id="customerCity" required>
 
-        <label for="state">State</label>
-        <input type="text" id="state"
-               placeholder="Enter your state" required>
+<label for="customerPincode">PIN Code</label>
+<input id="customerPincode" inputmode="numeric" required>
 
-        <label for="pincode">PIN Code</label>
-        <input type="text" id="pincode"
-               placeholder="Enter 6-digit PIN code"
-               pattern="[0-9]{6}" maxlength="6" required>
+<button class="checkout-button" type="submit">
+Place Demo Order
+</button>
 
-        <h2>Payment Preference</h2>
+</form>
+</section>
 
-        <label for="payment">Select Payment Method</label>
-        <select id="payment" required>
-            <option value="">Choose payment method</option>
-            <option value="Cash on Delivery">Cash on Delivery</option>
-            <option value="Online Payment - To be enabled">
-                Online Payment (Coming Soon)
-            </option>
-        </select>
+<section class="checkout-card">
+<h2>Order Summary</h2>
 
-        <div class="order-summary">
-            <h2>Order Summary</h2>
-            <div id="summaryItems"></div>
-            <h3 id="summaryTotal">Total: Price to be confirmed</h3>
-        </div>
+<div id="orderItems"></div>
 
-        <button type="submit" class="submit-button">
-            Place Order
-        </button>
+<div class="order-row order-total">
+<span>Total</span>
+<span>₹<span id="orderTotal">0</span></span>
+</div>
 
-        <p class="message" id="message"></p>
+<p id="message"></p>
+</section>
 
-    </form>
+</div>
 
-    <a href="cart.html" class="back-link">
-        ← Back to Cart
-    </a>
+<a href="cart.html" class="back-link">← Back to Cart</a>
 
 </main>
 
-<script>
-    const cart = JSON.parse(
-        localStorage.getItem("blendoraCart") || "[]"
-    );
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="js/firebase-config.js"></script>
 
-    const summaryItems = document.getElementById("summaryItems");
-    const summaryTotal = document.getElementById("summaryTotal");
+<script>
+const API_BASE = "http://localhost:5000";
+
+const auth = firebase.auth();
+
+function getCart() {
+    try {
+        return JSON.parse(localStorage.getItem("blendoraCart") || "[]");
+    } catch {
+        return [];
+    }
+}
+
+const cart = getCart();
+const orderItems = document.getElementById("orderItems");
+const orderTotal = document.getElementById("orderTotal");
+const message = document.getElementById("message");
+const form = document.getElementById("checkoutForm");
+const button = form.querySelector("button");
+
+let displayTotal = 0;
+
+if (cart.length === 0) {
+    orderItems.textContent = "Your cart is empty.";
+    button.disabled = true;
+} else {
+    cart.forEach(product => {
+        const quantity = Number(product.quantity || 1);
+        const price = Number(product.price || 0);
+        const itemTotal = quantity * price;
+
+        displayTotal += itemTotal;
+
+        const row = document.createElement("div");
+        row.className = "order-row";
+
+        const name = document.createElement("span");
+        name.textContent = (product.name || "Product") + " × " + quantity;
+
+        const priceText = document.createElement("span");
+        priceText.textContent = "₹" + itemTotal.toFixed(2);
+
+        row.append(name, priceText);
+        orderItems.appendChild(row);
+    });
+}
+
+orderTotal.textContent = displayTotal.toFixed(2);
+
+// Prefill email when customer is logged in
+auth.onAuthStateChanged(user => {
+    if (user && user.email) {
+        document.getElementById("customerEmail").value = user.email;
+    }
+});
+
+form.addEventListener("submit", async function(event) {
+    event.preventDefault();
 
     if (cart.length === 0) {
-        summaryItems.textContent = "Your cart is empty.";
-        document.querySelector(".submit-button").disabled = true;
-        document.querySelector(".submit-button").textContent =
-            "Add Products Before Checkout";
-    } else {
-        cart.forEach(item => {
-            const line = document.createElement("p");
-            line.textContent = item.name || "Makeup Product";
-            summaryItems.appendChild(line);
-        });
-
-        const hasPrices = cart.every(
-            item => Number.isFinite(Number(item.price)) &&
-                    item.price !== ""
-        );
-
-        if (hasPrices) {
-            const total = cart.reduce(
-                (sum, item) => sum + Number(item.price), 0
-            );
-
-            summaryTotal.textContent = "Total: ₹" + total.toFixed(2);
-        }
+        message.textContent = "Your cart is empty.";
+        return;
     }
 
-    document.getElementById("checkoutForm").addEventListener(
-        "submit", function(event) {
+    const user = auth.currentUser;
 
-            event.preventDefault();
+    if (!user) {
+        message.textContent = "Please login to your customer account before placing an order.";
+        return;
+    }
 
-            if (cart.length === 0) {
-                return;
-            }
+    const email = document.getElementById("customerEmail").value.trim();
 
-            const order = {
-                orderId: "BL" + Date.now(),
-                customerName: document.getElementById("customerName").value,
-                email: document.getElementById("email").value,
-                phone: document.getElementById("phone").value,
-                address: document.getElementById("address").value,
-                city: document.getElementById("city").value,
-                state: document.getElementById("state").value,
-                pincode: document.getElementById("pincode").value,
-                payment: document.getElementById("payment").value,
-                products: cart,
-                orderDate: new Date().toISOString(),
-                status: "Pending"
-            };
+    if (user.email && email.toLowerCase() !== user.email.toLowerCase()) {
+        message.textContent = "Please use the email address of your logged-in account.";
+        return;
+    }
 
-            if (order.payment === "Online Payment - To be enabled") {
-                document.getElementById("message").textContent =
-                    "Online payment is not available yet. Please select Cash on Delivery.";
-                return;
-            }
+    const items = cart.map(product => ({
+        productId: product.productId || product.id,
+        quantity: Number(product.quantity || 1)
+    }));
 
-            const orders = JSON.parse(
-                localStorage.getItem("blendoraOrders") || "[]"
-            );
+    if (items.some(item => !item.productId)) {
+        message.textContent = "A cart product is missing its product ID. Please remove it and add the product again.";
+        return;
+    }
 
-            orders.push(order);
+    button.disabled = true;
+    button.textContent = "Placing order...";
+    message.textContent = "";
 
-            localStorage.setItem(
-                "blendoraOrders",
-                JSON.stringify(orders)
-            );
+    try {
+        const token = await user.getIdToken();
 
-            localStorage.removeItem("blendoraCart");
+        const response = await fetch(API_BASE + "/api/orders", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                items,
+                delivery: {
+                    name: document.getElementById("customerName").value.trim(),
+                    phone: document.getElementById("customerPhone").value.trim(),
+                    address: document.getElementById("customerAddress").value.trim(),
+                    city: document.getElementById("customerCity").value.trim(),
+                    pincode: document.getElementById("customerPincode").value.trim()
+                }
+            })
+        });
 
-            localStorage.setItem(
-                "blendoraLastOrder",
-                JSON.stringify(order)
-            );
+        const result = await response.json();
 
-            window.location.href = "order.html";
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Order could not be placed.");
         }
-    );
+
+        localStorage.removeItem("blendoraCart");
+
+        message.textContent =
+            "Demo order placed! Order ID: " + result.orderId +
+            " | Total: ₹" + Number(result.total).toFixed(2);
+
+        form.reset();
+        orderItems.innerHTML = "";
+        orderTotal.textContent = "0";
+
+        button.textContent = "Order Placed";
+
+    } catch (error) {
+        console.error("Checkout error:", error);
+
+        message.textContent = error.message ||
+            "Unable to place order. Please try again.";
+
+        button.disabled = false;
+        button.textContent = "Place Demo Order";
+    }
+});
 </script>
 
 </body>

@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Blendora</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff8fb;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .order-card {
+            background: white;
+            border: 1px solid #f0dce7;
+            border-radius: 12px;
+            padding: 18px;
+            margin: 15px 0;
+        }
+
+        .order-card h3 {
+            color: #a83268;
+        }
+
+        .status {
+            color: #a83268;
+            font-weight: bold;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px 10px;
+        }
+
+        button {
+            background: #a83268;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>My Orders</h1>
+    <p>Track your Blendora orders here.</p>
+
+    <div id="orders">
+        Loading your orders...
+    </div>
+
+    <button onclick="location.href='products.html'">
+        Continue Shopping
+    </button>
+</div>
+
+<script type="module">
+import { auth } from "./js/firebase-config.js";
+import { onAuthStateChanged } from
+    "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const ordersContainer = document.getElementById("orders");
+const API_BASE = "http://localhost:5000";
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        ordersContainer.innerHTML =
+            "<p>Please login to view your orders.</p>";
+        return;
+    }
+
+    try {
+        const token = await user.getIdToken();
+
+        const response = await fetch(
+            `${API_BASE}/api/orders/my`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Unable to load orders");
+        }
+
+        if (!data.orders || data.orders.length === 0) {
+            ordersContainer.innerHTML = `
+                <div class="empty">
+                    <h3>No orders yet!</h3>
+                    <p>Your orders will appear here.</p>
+                </div>
+            `;
+            return;
+        }
+
+        ordersContainer.innerHTML = data.orders.map(order => `
+            <div class="order-card">
+                <h3>Order #${order.orderId || order.id}</h3>
+                <p><b>Date:</b> ${order.createdAt
+                    ? new Date(order.createdAt).toLocaleDateString()
+                    : "N/A"}</p>
+                <p><b>Total:</b> ₹${Number(order.total || 0).toFixed(2)}</p>
+                <p><b>Status:</b>
+                    <span class="status">${order.status || "Pending"}</span>
+                </p>
+                <p><b>Payment:</b> Demo payment</p>
+            </div>
+        `).join("");
+
+    } catch (error) {
+        ordersContainer.innerHTML =
+            `<p>${error.message}</p>`;
+    }
+});
+</script>
+
+</body>
+</html>
