@@ -17,7 +17,7 @@
             <a href="#home">Home</a>
             <a href="#products">Products</a>
             <a href="#about">About</a>
-           <a href="login.html" id="loginLink">Login</a>
+            <a href="login.html" id="loginLink">Login</a>
         </nav>
 
         <a href="quiz.html" class="nav-button">Find My Shade</a>
@@ -109,14 +109,51 @@
         <p>© 2026 Blendora. All Rights Reserved.</p>
     </footer>
 
+    <!-- Firebase SDK FIRST -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-config.js"></script>
+
+    <!-- Application Scripts -->
     <script src="js/app.js"></script>
     <script src="js/api.js"></script>
 
+    <!-- Login / Logout Functionality -->
+    <script>
+        const loginLink = document.getElementById("loginLink");
+
+        if (window.blendoraAuth && loginLink) {
+            window.blendoraAuth.onAuthStateChanged(function(user) {
+
+                if (user) {
+                    loginLink.textContent = "Logout";
+                    loginLink.href = "#";
+
+                    loginLink.onclick = async function(event) {
+                        event.preventDefault();
+
+                        try {
+                            await window.blendoraAuth.signOut();
+                            window.location.href = "login.html";
+                        } catch (error) {
+                            console.error("Logout error:", error);
+                            alert("Logout failed. Please try again.");
+                        }
+                    };
+
+                } else {
+                    loginLink.textContent = "Login";
+                    loginLink.href = "login.html";
+                    loginLink.onclick = null;
+                }
+            });
+        } else {
+            console.error("Firebase Auth or Login link not available.");
+        }
+    </script>
+
 </body>
-   
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </html>
