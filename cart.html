@@ -167,9 +167,10 @@
         <p>Subtotal: ₹<span id="subtotal">0</span></p>
         <h2>Total: ₹<span id="total">0</span></h2>
 
-        <button class="checkout-button" onclick="goToCheckout()">
+        <!-- Direct Checkout Link -->
+        <a href="checkout.html" class="checkout-button">
             Proceed to Checkout
-        </button>
+        </a>
     </div>
 
     <a href="products.html" class="back-link">
@@ -331,10 +332,6 @@ function removeProduct(index) {
 
     saveCart(cart);
     renderCart();
-}
-
-function goToCheckout() {
-    window.location.href = "checkout.html";
 }
 
 renderCart();
