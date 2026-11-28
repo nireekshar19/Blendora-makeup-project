@@ -5,14 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Blendora | Admin Orders</title>
+
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: #fff7f8;
       color: #33252b;
     }
+
     header {
       background: #8b3455;
       color: white;
@@ -23,14 +26,17 @@
       flex-wrap: wrap;
       gap: 12px;
     }
+
     main { padding: 24px; }
     h1 { margin: 0; font-size: 24px; }
+
     .orders {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 18px;
       margin-top: 20px;
     }
+
     .order {
       background: white;
       border: 1px solid #f0dce3;
@@ -38,158 +44,232 @@
       padding: 18px;
       box-shadow: 0 4px 14px #00000008;
     }
+
     .order h3 { margin-top: 0; color: #8b3455; }
     .order p { margin: 8px 0; overflow-wrap: anywhere; }
+
     select, button {
       padding: 10px;
       border-radius: 8px;
       border: 1px solid #d8b8c5;
       font-size: 14px;
     }
+
     select { width: 100%; margin-top: 10px; }
+
     button {
       background: #8b3455;
       color: white;
       border: 0;
       cursor: pointer;
     }
+
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+
     .message { margin-top: 15px; font-weight: bold; }
     .empty { padding: 20px; background: white; border-radius: 12px; }
   </style>
 </head>
+
 <body>
-  <header>
-    <h1>Blendora — All Orders</h1>
-    <button id="logoutBtn">Logout</button>
-  </header>
 
-  <main>
-    <h2>Customer Orders</h2>
-    <p id="message" class="message">Loading orders...</p>
-    <div id="orders" class="orders"></div>
-  </main>
+<header>
+  <h1>Blendora — All Orders</h1>
+  <button id="logoutBtn">Logout</button>
+</header>
 
-  <script type="module">
-    import { auth } from "../js/firebase-config.js";
-    import {
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+<main>
+  <h2>Customer Orders</h2>
+  <p id="message" class="message">Loading orders...</p>
+  <div id="orders" class="orders"></div>
+</main>
 
-    const API_BASE = "https://blendora-makeup-project-7.onrender.com";
-    const ordersContainer = document.getElementById("orders");
-    const message = document.getElementById("message");
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="../js/firebase-config.js"></script>
 
-    async function getToken(user) {
-      return await user.getIdToken();
+<script>
+const API_BASE = "https://blendora-makeup-project-7.onrender.com";
+
+const auth = window.blendoraAuth;
+const ordersContainer = document.getElementById("orders");
+const message = document.getElementById("message");
+
+let currentUser = null;
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  }[char]));
+}
+
+async function loadOrders(user) {
+  try {
+    message.textContent = "Loading orders...";
+    ordersContainer.innerHTML = "";
+
+    const token = await user.getIdToken();
+
+    const response = await fetch(`${API_BASE}/api/admin/orders`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Unable to load orders");
     }
 
-    async function loadOrders(user) {
-      try {
-        message.textContent = "Loading orders...";
-        const token = await getToken(user);
+    const orders = data.orders || [];
 
-        const response = await fetch(`${API_BASE}/api/admin/orders`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+    if (!orders.length) {
+      message.textContent = "No orders found yet.";
+      ordersContainer.innerHTML =
+        '<div class="empty">No customer orders available.</div>';
+      return;
+    }
 
-        const data = await response.json();
+    message.textContent = `${orders.length} order(s) found`;
 
-        if (!response.ok) {
-          throw new Error(data.message || data.error || "Unable to load orders");
-        }
+    orders.forEach(order => {
+      const card = document.createElement("div");
+      card.className = "order";
 
-        const orders = data.orders || data;
+      const orderId = order.id || order.orderId;
+      const status = order.status || "Pending";
+      const total = Number(order.total ?? 0);
 
-        ordersContainer.innerHTML = "";
+      const validStatuses = [
+        "Pending",
+        "Processing",
+        "Shipped",
+        "Delivered",
+        "Cancelled"
+      ];
 
-        if (!Array.isArray(orders) || orders.length === 0) {
-          message.textContent = "No orders found yet.";
-          return;
-        }
+      const currentStatus = validStatuses.includes(status)
+        ? status
+        : "Pending";
 
-        message.textContent = `${orders.length} order(s) found`;
+      const delivery = order.delivery || {};
 
-        orders.forEach(order => {
-          const card = document.createElement("div");
-          card.className = "order";
+      card.innerHTML = `
+        <h3>Order #${escapeHTML(orderId)}</h3>
 
-          const orderId = order.id || order.orderId;
-          const status = order.status || "pending";
-          const total = order.total ?? order.totalAmount ?? 0;
+        <p><b>Customer:</b>
+          ${escapeHTML(order.customerName || "Customer")}
+        </p>
 
-          card.innerHTML = `
-            <h3>Order #${orderId}</h3>
-            <p><b>Customer:</b> ${order.customerName || order.name || "Customer"}</p>
-            <p><b>Email:</b> ${order.customerEmail || order.email || "Not available"}</p>
-            <p><b>Total:</b> ₹${Number(total).toFixed(2)}</p>
-            <p><b>Payment:</b> ${order.paymentStatus || "Demo / Unpaid"}</p>
-            <p><b>Current status:</b> ${status}</p>
-            <label>Update order status</label>
-            <select class="statusSelect">
-              <option value="pending">Pending</option>
-              <option value="processing">Processing</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
-            <button class="updateBtn" style="margin-top:10px;width:100%">
-              Update Status
-            </button>
-          `;
+        <p><b>Email:</b>
+          ${escapeHTML(order.customerEmail || "Not available")}
+        </p>
 
-          const select = card.querySelector(".statusSelect");
-          select.value = status.toLowerCase();
+        <p><b>Phone:</b>
+          ${escapeHTML(delivery.phone || "Not available")}
+        </p>
 
-          card.querySelector(".updateBtn").addEventListener("click", async () => {
-            try {
-              const newStatus = select.value;
-              const token = await getToken(user);
+        <p><b>Address:</b>
+          ${escapeHTML(delivery.address || "Not available")},
+          ${escapeHTML(delivery.city || "")} -
+          ${escapeHTML(delivery.pincode || "")}
+        </p>
 
-              const updateResponse = await fetch(
-                `${API_BASE}/api/admin/orders/${encodeURIComponent(orderId)}/status`,
-                {
-                  method: "PATCH",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                  },
-                  body: JSON.stringify({ status: newStatus })
-                }
-              );
+        <p><b>Total:</b> ₹${total.toFixed(2)}</p>
 
-              const result = await updateResponse.json();
+        <p><b>Payment:</b>
+          ${escapeHTML(order.paymentStatus || "Demo / Unpaid")}
+        </p>
 
-              if (!updateResponse.ok) {
-                throw new Error(result.message || result.error || "Status update failed");
-              }
+        <p><b>Current status:</b>
+          <span class="currentStatus">${escapeHTML(currentStatus)}</span>
+        </p>
 
-              alert("Order status updated!");
-              loadOrders(user);
-            } catch (error) {
-              alert(error.message);
+        <label>Update order status</label>
+
+        <select class="statusSelect">
+          <option value="Pending">Pending</option>
+          <option value="Processing">Processing</option>
+          <option value="Shipped">Shipped</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+
+        <button class="updateBtn" style="margin-top:10px;width:100%">
+          Update Status
+        </button>
+      `;
+
+      const select = card.querySelector(".statusSelect");
+      const updateBtn = card.querySelector(".updateBtn");
+
+      select.value = currentStatus;
+
+      updateBtn.addEventListener("click", async () => {
+        try {
+          updateBtn.disabled = true;
+          updateBtn.textContent = "Updating...";
+
+          const token = await user.getIdToken();
+          const newStatus = select.value;
+
+          const updateResponse = await fetch(
+            `${API_BASE}/api/admin/orders/${encodeURIComponent(orderId)}/status`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify({ status: newStatus })
             }
-          });
+          );
 
-          ordersContainer.appendChild(card);
-        });
-      } catch (error) {
-        message.textContent = error.message;
-      }
-    }
+          const result = await updateResponse.json();
 
-    onAuthStateChanged(auth, user => {
-      if (!user) {
-        window.location.href = "../login.html";
-        return;
-      }
-      loadOrders(user);
+          if (!updateResponse.ok) {
+            throw new Error(result.message || "Status update failed");
+          }
+
+          alert("Order status updated successfully!");
+          await loadOrders(user);
+
+        } catch (error) {
+          alert(error.message);
+          updateBtn.disabled = false;
+          updateBtn.textContent = "Update Status";
+        }
+      });
+
+      ordersContainer.appendChild(card);
     });
 
-    document.getElementById("logoutBtn").addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "../login.html";
-    });
-  </script>
+  } catch (error) {
+    console.error(error);
+    message.textContent = error.message;
+  }
+}
+
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "../login.html";
+    return;
+  }
+
+  currentUser = user;
+  loadOrders(user);
+});
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await auth.signOut();
+  window.location.href = "../login.html";
+});
+</script>
+
 </body>
 </html>
