@@ -2,150 +2,306 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blendora | Your Perfect Shade</title>
-    <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout | Blendora</title>
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+.checkout-container{max-width:1000px;margin:40px auto;padding:20px}
+.checkout-title{text-align:center;color:#82415e;margin-bottom:30px}
+.checkout-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:30px}
+.checkout-card{background:white;padding:25px;border-radius:15px;box-shadow:0 4px 15px rgba(0,0,0,.08)}
+.checkout-card h2{color:#82415e;margin-bottom:20px}
+.checkout-form label{display:block;color:#666;margin:15px 0 7px}
+.checkout-form input,.checkout-form textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:15px;box-sizing:border-box}
+.checkout-form textarea{height:90px;resize:vertical}
+.checkout-button{width:100%;background:#a85d7c;color:white;border:none;padding:14px;border-radius:25px;margin-top:20px;cursor:pointer;font-size:16px}
+.checkout-button:disabled{opacity:.6;cursor:not-allowed}
+.order-row{display:flex;justify-content:space-between;gap:15px;margin:15px 0;color:#666}
+.order-total{font-size:21px;font-weight:bold;color:#82415e;border-top:1px solid #eee;padding-top:15px}
+#message{text-align:center;color:#82415e;margin:20px;overflow-wrap:anywhere}
+.back-link{display:inline-block;margin-top:25px;color:#82415e;text-decoration:none}
+@media(max-width:700px){.checkout-grid{grid-template-columns:1fr}}
+</style>
 </head>
+
 <body>
 
-    <!-- Navigation -->
-    <header class="header">
-        <a href="index.html" class="logo">Blendora<span>.</span></a>
+<header class="header">
+<a href="index.html" class="logo">Blendora<span>.</span></a>
+<nav class="navbar">
+<a href="index.html">Home</a>
+<a href="products.html">Products</a>
+<a href="cart.html">My Cart</a>
+</nav>
+</header>
 
-        <nav class="navbar">
-            <a href="#home">Home</a>
-            <a href="#products">Products</a>
-            <a href="#about">About</a>
-            <a href="login.html" id="loginLink">Login</a>
-        </nav>
+<main class="checkout-container">
 
-        <a href="quiz.html" class="nav-button">Find My Shade</a>
-    </header>
+<h1 class="checkout-title">Checkout</h1>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="hero-content">
-            <p class="tagline">BEAUTY THAT MATCHES YOU</p>
-            <h1>Your Skin.<br>Your Shade.<br>Your Beauty.</h1>
-            <p>
-                Discover foundation and concealer specially
-                customized to match your unique skin tone.
-            </p>
-            <a href="quiz.html" class="main-button">
-                Discover Your Shade →
-            </a>
-        </div>
+<div class="checkout-grid">
 
-        <div class="hero-image">
-            <img src="images/hero-makeup.jpg" alt="Makeup beauty collection">
-        </div>
-    </section>
+<section class="checkout-card">
+<h2>Delivery Details</h2>
 
-    <!-- Products Section -->
-    <section class="products" id="products">
-        <div class="section-heading">
-            <p>OUR COLLECTION</p>
-            <h2>Made Just For You</h2>
-        </div>
+<form id="checkoutForm">
 
-        <div class="product-container">
-            <div class="product-card">
-                <img src="images/foundation.jpg" alt="Foundation">
-                <h3>Custom Foundation</h3>
-                <p>A foundation shade that matches your skin.</p>
-                <a href="quiz.html">Find Your Match</a>
-            </div>
+<label for="customerName">Full Name</label>
+<input id="customerName" type="text" required>
 
-            <div class="product-card">
-                <img src="images/concealer.jpg" alt="Concealer">
-                <h3>Custom Concealer</h3>
-                <p>Personalized concealer for your complexion.</p>
-                <a href="quiz.html">Find Your Match</a>
-            </div>
-        </div>
-    </section>
+<label for="customerEmail">Email Address</label>
+<input id="customerEmail" type="email" required>
 
-    <!-- How It Works -->
-    <section class="how-it-works" id="about">
-        <div class="section-heading">
-            <p>YOUR BEAUTY JOURNEY</p>
-            <h2>How It Works</h2>
-        </div>
+<label for="customerPhone">Phone Number</label>
+<input id="customerPhone" type="tel" pattern="[0-9]{10}" maxlength="10" required>
 
-        <div class="steps">
-            <div class="step">
-                <span>01</span>
-                <h3>Take the Quiz</h3>
-                <p>Answer a few questions about your skin.</p>
-            </div>
+<label for="customerAddress">Delivery Address</label>
+<textarea id="customerAddress" required></textarea>
 
-            <div class="step">
-                <span>02</span>
-                <h3>Get Your Shade</h3>
-                <p>Discover your personalized shade recommendation.</p>
-            </div>
+<label for="customerCity">City</label>
+<input id="customerCity" type="text" required>
 
-            <div class="step">
-                <span>03</span>
-                <h3>Enjoy Your Beauty</h3>
-                <p>Explore your customized beauty products.</p>
-            </div>
-        </div>
-    </section>
+<label for="customerPincode">PIN Code</label>
+<input id="customerPincode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <h2>Blendora.</h2>
-        <p>Your Perfect Shade. Your Perfect Confidence.</p>
-        <p>© 2026 Blendora. All Rights Reserved.</p>
-    </footer>
+<button class="checkout-button" type="submit">
+Place Demo Order
+</button>
 
-    <!-- Firebase SDK: MUST LOAD FIRST -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</form>
+</section>
 
-    <!-- Firebase Configuration -->
-    <script src="js/firebase-config.js"></script>
+<section class="checkout-card">
+<h2>Order Summary</h2>
 
-    <!-- App Scripts -->
-    <script src="js/app.js"></script>
-    <script src="js/api.js"></script>
+<div id="orderItems"></div>
 
-    <!-- Login / Logout -->
-    <script>
-    const loginLink = document.getElementById("loginLink");
+<div class="order-row order-total">
+<span>Total</span>
+<span>₹<span id="orderTotal">0</span></span>
+</div>
 
-    if (window.blendoraAuth && loginLink) {
-        window.blendoraAuth.onAuthStateChanged(function(user) {
+<p id="message"></p>
+</section>
 
-            if (user) {
-                loginLink.textContent = "Logout";
-                loginLink.href = "#";
+</div>
 
-                loginLink.onclick = async function(event) {
-                    event.preventDefault();
+<a href="cart.html" class="back-link">← Back to Cart</a>
 
-                    try {
-                        await window.blendoraAuth.signOut();
-                        window.location.href = "login.html";
-                    } catch (error) {
-                        console.error("Logout error:", error);
-                        alert("Logout failed. Please try again.");
-                    }
-                };
+</main>
 
-            } else {
-                loginLink.textContent = "Login";
-                loginLink.href = "login.html";
-                loginLink.onclick = null;
-            }
-        });
-    } else {
-        console.error("Firebase Auth or Login link not available.");
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<!-- Firebase Configuration -->
+<script src="js/firebase-config.js"></script>
+
+<script>
+const API_BASE = "https://blendora-makeup-project-7.onrender.com";
+
+const auth = window.blendoraAuth;
+
+const form = document.getElementById("checkoutForm");
+const button = form.querySelector("button");
+const orderItems = document.getElementById("orderItems");
+const orderTotal = document.getElementById("orderTotal");
+const message = document.getElementById("message");
+
+function getCart() {
+    try {
+        return JSON.parse(localStorage.getItem("blendoraCart") || "[]");
+    } catch (error) {
+        return [];
     }
-    </script>
+}
+
+const cart = getCart();
+
+let displayTotal = 0;
+
+if (!auth) {
+    message.textContent = "Firebase authentication is not available. Please refresh the page.";
+    button.disabled = true;
+} else if (cart.length === 0) {
+    orderItems.textContent = "Your cart is empty.";
+    button.disabled = true;
+} else {
+    cart.forEach(product => {
+        const quantity = Number(product.quantity || 1);
+        const price = Number(product.price || 0);
+        const itemTotal = quantity * price;
+
+        displayTotal += itemTotal;
+
+        const row = document.createElement("div");
+        row.className = "order-row";
+
+        const name = document.createElement("span");
+        name.textContent = (product.name || "Product") + " × " + quantity;
+
+        const priceText = document.createElement("span");
+        priceText.textContent = "₹" + itemTotal.toFixed(2);
+
+        row.append(name, priceText);
+        orderItems.appendChild(row);
+    });
+}
+
+orderTotal.textContent = displayTotal.toFixed(2);
+
+// Login state
+if (auth) {
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById("customerEmail").value = user.email || "";
+            document.getElementById("customerName").value = user.displayName || "";
+        }
+    });
+}
+
+// Place Order
+form.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    if (cart.length === 0) {
+        message.textContent = "Your cart is empty.";
+        return;
+    }
+
+    const user = auth.currentUser;
+
+    if (!user) {
+        message.textContent = "Please login before placing your order.";
+        return;
+    }
+
+    const email = document.getElementById("customerEmail").value.trim();
+
+    if (user.email && email.toLowerCase() !== user.email.toLowerCase()) {
+        message.textContent = "Please use your registered login email.";
+        return;
+    }
+
+    const items = cart.map(product => ({
+        productId: product.productId || product.id,
+        quantity: Number(product.quantity || 1)
+    }));
+
+    if (items.some(item => !item.productId || !item.quantity || item.quantity < 1)) {
+        message.textContent = "Invalid cart product. Please add the product again.";
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Placing order...";
+    message.textContent = "";
+
+    try {
+        const token = await user.getIdToken();
+
+        // Check customer profile
+        const profileResponse = await fetch(
+            API_BASE + "/api/account/profile",
+            {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            }
+        );
+
+        if (profileResponse.status === 404) {
+
+            const createResponse = await fetch(
+                API_BASE + "/api/account/register-role",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                        name: document.getElementById("customerName").value.trim() || "Customer",
+                        role: "customer"
+                    })
+                }
+            );
+
+            const createResult = await createResponse.json();
+
+            if (!createResponse.ok) {
+                throw new Error(createResult.message || "Unable to create customer profile.");
+            }
+
+        } else {
+
+            const profileResult = await profileResponse.json();
+
+            if (!profileResponse.ok) {
+                throw new Error(profileResult.message || "Unable to verify account.");
+            }
+
+            if (
+                !profileResult.profile ||
+                profileResult.profile.role !== "customer" ||
+                profileResult.profile.status !== "active"
+            ) {
+                throw new Error("This account is not an active customer account.");
+            }
+        }
+
+        // Place order
+        const response = await fetch(API_BASE + "/api/orders", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify({
+                items: items,
+                delivery: {
+                    name: document.getElementById("customerName").value.trim(),
+                    phone: document.getElementById("customerPhone").value.trim(),
+                    address: document.getElementById("customerAddress").value.trim(),
+                    city: document.getElementById("customerCity").value.trim(),
+                    pincode: document.getElementById("customerPincode").value.trim()
+                }
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Order could not be placed.");
+        }
+
+        localStorage.removeItem("blendoraCart");
+
+        message.textContent =
+            "Order placed successfully! Order ID: " + result.orderId +
+            " | Total: ₹" + Number(result.total).toFixed(2);
+
+        form.reset();
+        orderItems.innerHTML = "";
+        orderTotal.textContent = "0";
+
+        button.textContent = "Order Placed";
+
+    } catch (error) {
+
+        console.error("Checkout Error:", error);
+
+        message.textContent = error.message || "Unable to place order. Please try again.";
+
+        button.disabled = false;
+        button.textContent = "Place Demo Order";
+    }
+});
+</script>
 
 </body>
 </html>
