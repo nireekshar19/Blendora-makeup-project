@@ -4,8 +4,7 @@
 ================================= */
 
 // Backend URL
-const BACKEND_URL = "http://localhost:5000";
-
+const BACKEND_URL = "https://blendora-makeup-project-7.onrender.com";
 // Run after the HTML page loads
 document.addEventListener("DOMContentLoaded", function () {
 
